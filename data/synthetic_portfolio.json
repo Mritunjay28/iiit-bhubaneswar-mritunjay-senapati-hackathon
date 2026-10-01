@@ -1,0 +1,152 @@
+[
+  {
+    "id": 1,
+    "assetName": "JPMorgan Term Loan",
+    "assetType": "LOAN",
+    "notionalValue": 50.0,
+    "interestRate": 5.2,
+    "duration": null,
+    "sector": "Banking",
+    "currency": "USD"
+  },
+  {
+    "id": 2,
+    "assetName": "US Treasury 10Y",
+    "assetType": "BOND",
+    "notionalValue": 100.0,
+    "interestRate": 3.8,
+    "duration": 8.2,
+    "sector": "Government",
+    "currency": "USD"
+  },
+  {
+    "id": 3,
+    "assetName": "Apple Corp Bond 5Y",
+    "assetType": "BOND",
+    "notionalValue": 30.0,
+    "interestRate": 4.1,
+    "duration": 4.5,
+    "sector": "Technology",
+    "currency": "USD"
+  },
+  {
+    "id": 4,
+    "assetName": "S&P 500 Futures",
+    "assetType": "DERIVATIVE",
+    "notionalValue": 75.0,
+    "interestRate": null,
+    "duration": null,
+    "sector": "Index",
+    "currency": "USD"
+  },
+  {
+    "id": 5,
+    "assetName": "EUR/USD FX Forward",
+    "assetType": "DERIVATIVE",
+    "notionalValue": 40.0,
+    "interestRate": null,
+    "duration": null,
+    "sector": "FX",
+    "currency": "EUR"
+  },
+  {
+    "id": 6,
+    "assetName": "Tesla Equity",
+    "assetType": "EQUITY",
+    "notionalValue": 20.0,
+    "interestRate": null,
+    "duration": null,
+    "sector": "Auto",
+    "currency": "USD"
+  },
+  {
+    "id": 7,
+    "assetName": "Goldman Sachs Loan",
+    "assetType": "LOAN",
+    "notionalValue": 60.0,
+    "interestRate": 4.9,
+    "duration": null,
+    "sector": "Banking",
+    "currency": "USD"
+  },
+  {
+    "id": 8,
+    "assetName": "Brazil Sovereign Bond",
+    "assetType": "BOND",
+    "notionalValue": 25.0,
+    "interestRate": 6.5,
+    "duration": 6.0,
+    "sector": "EM Sovereign",
+    "currency": "USD"
+  },
+  {
+    "id": 9,
+    "assetName": "Crude Oil Swap",
+    "assetType": "DERIVATIVE",
+    "notionalValue": 35.0,
+    "interestRate": null,
+    "duration": null,
+    "sector": "Commodity",
+    "currency": "USD"
+  },
+  {
+    "id": 10,
+    "assetName": "NVIDIA Equity",
+    "assetType": "EQUITY",
+    "notionalValue": 15.0,
+    "interestRate": null,
+    "duration": null,
+    "sector": "Technology",
+    "currency": "USD"
+  },
+  {
+    "id": 11,
+    "assetName": "UK Gilt 5Y",
+    "assetType": "BOND",
+    "notionalValue": 45.0,
+    "interestRate": 3.2,
+    "duration": 4.8,
+    "sector": "Government",
+    "currency": "GBP"
+  },
+  {
+    "id": 12,
+    "assetName": "Vanguard REIT ETF",
+    "assetType": "EQUITY",
+    "notionalValue": 22.0,
+    "interestRate": null,
+    "duration": null,
+    "sector": "Real Estate",
+    "currency": "USD"
+  },
+  {
+    "id": 13,
+    "assetName": "Microsoft Equity",
+    "assetType": "EQUITY",
+    "notionalValue": 18.0,
+    "interestRate": null,
+    "duration": null,
+    "sector": "Technology",
+    "currency": "USD"
+  },
+  {
+    "id": 14,
+    "assetName": "Deutsche Bank CDS",
+    "assetType": "DERIVATIVE",
+    "notionalValue": 30.0,
+    "interestRate": null,
+    "duration": null,
+    "sector": "Banking",
+    "currency": "EUR"
+  },
+  {
+    "id": 15,
+    "assetName": "India Govt Bond 7Y",
+    "assetType": "BOND",
+    "notionalValue": 20.0,
+    "interestRate": 7.1,
+    "duration": 5.5,
+    "sector": "EM Sovereign",
+    "currency": "INR"
+  }
+]

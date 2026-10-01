@@ -1,0 +1,58 @@
+[
+  {
+    "id": 1,
+    "source": "GDELT",
+    "rawText": "Central banks escalate geopolitical trade sanctions amid escalating border conflict, freezing sovereign overseas accounts and imposing emergency tariffs on strategic commodity imports.",
+    "entity": "Central Banks",
+    "expectedEvent": "GEOPOLITICAL",
+    "expectedImpact": 8
+  },
+  {
+    "id": 2,
+    "source": "GDELT",
+    "rawText": "Federal Reserve Chair signals aggressive interest rate hike as core inflation surges past targets, triggering market-wide recession and unemployment anxieties across Wall Street.",
+    "entity": "Federal Reserve",
+    "expectedEvent": "MACROECONOMIC",
+    "expectedImpact": 8
+  },
+  {
+    "id": 3,
+    "source": "GDELT",
+    "rawText": "Major commercial property giant defaults on sovereign debt obligations, prompting rating agencies to downgrade credit facilities and spark emergency debt restructuring talks.",
+    "entity": "Global Property Group",
+    "expectedEvent": "CREDIT_EVENT",
+    "expectedImpact": 9
+  },
+  {
+    "id": 4,
+    "source": "GDELT",
+    "rawText": "Antitrust watchdogs and DOJ launch sweeping regulatory investigation and impose unprecedented antitrust fines on dominant artificial intelligence cloud providers.",
+    "entity": "DOJ & FTC",
+    "expectedEvent": "REGULATORY",
+    "expectedImpact": 7
+  },
+  {
+    "id": 5,
+    "source": "GDELT",
+    "rawText": "Mega technology conglomerate finalizes blockbuster acquisition buyout of autonomous robotics leader in multi-billion dollar strategic stake transaction.",
+    "entity": "MegaTech Corp",
+    "expectedEvent": "MERGER_ACQUISITION",
+    "expectedImpact": 5
+  },
+  {
+    "id": 6,
+    "source": "GDELT",
+    "rawText": "Electric vehicle pioneer unveils groundbreaking battery architecture and next-generation neural chip hardware at annual product launch showcase.",
+    "entity": "Tesla",
+    "expectedEvent": "PRODUCT_LAUNCH",
+    "expectedImpact": 4
+  },
+  {
+    "id": 7,
+    "source": "GDELT",
+    "rawText": "Semiconductor manufacturing titan beats quarterly earnings forecast with record high gross profit margin and raises full-year guidance on unprecedented enterprise AI chip demand.",
+    "entity": "NVIDIA",
+    "expectedEvent": "EARNINGS",
+    "expectedImpact": 5
+  }
+]

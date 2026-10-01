@@ -1,0 +1,9 @@
+tweet_id,timestamp,ticker,text,retweet_count,like_count
+1001,2026-09-29 14:15:00,JPM,"Breaking: JPMorgan and US Treasury discuss emergency liquidity backstop as regional bank debt spreads spike.",1420,5300
+1002,2026-09-29 15:30:00,TSLA,"Tesla announces massive new Gigafactory battery launch and automated robotaxi production timelines.",890,4120
+1003,2026-09-29 16:45:00,NVDA,"NVIDIA reports stellar quarterly earnings beat! EPS +45% YoY and record data center guidance.",2540,11800
+1004,2026-09-30 08:20:00,SPY,"Fed rate hike expectations jump to 92% probability following sticky core inflation metrics release.",3100,7400
+1005,2026-09-30 09:10:00,AAPL,"Apple faces stringent European regulatory scrutiny and compliance fines over App Store billing policies.",670,2900
+1006,2026-09-30 10:05:00,USO,"Geopolitical tensions disrupt key crude oil shipping straits, sending oil swap prices surging 8%.",1850,6200
+1007,2026-09-30 11:40:00,DB,"Deutsche Bank credit default swaps widen sharply amid European commercial debt restructuring rumors.",940,3150
+1008,2026-09-30 12:15:00,MSFT,"Microsoft agrees to acquisition of cybersecurity software provider in $4.2B all-cash transaction.",1220,5400

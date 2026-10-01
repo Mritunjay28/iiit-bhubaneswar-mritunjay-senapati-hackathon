@@ -1,0 +1,72 @@
+{
+  "GEOPOLITICAL": {
+    "scenarioName": "Geopolitical Crisis",
+    "eventType": "GEOPOLITICAL",
+    "description": "Cross-border conflict escalation, trade sanctions, and flight to safe-haven assets",
+    "equityShock": -0.12,
+    "interestRateShock": 0.0050,
+    "creditSpreadShockBps": 150.0,
+    "fxShock": -0.05,
+    "commodityShock": 0.15
+  },
+  "MACROECONOMIC": {
+    "scenarioName": "Macro Downturn & Rate Hike",
+    "eventType": "MACROECONOMIC",
+    "description": "Persistent inflation triggers central bank rate increases and contraction in industrial demand",
+    "equityShock": -0.08,
+    "interestRateShock": 0.0200,
+    "creditSpreadShockBps": 100.0,
+    "fxShock": -0.03,
+    "commodityShock": -0.05
+  },
+  "CREDIT_EVENT": {
+    "scenarioName": "Credit Crunch & Default Cascade",
+    "eventType": "CREDIT_EVENT",
+    "description": "Major corporate rating downgrades and debt default concerns widen systemic credit spreads",
+    "equityShock": -0.15,
+    "interestRateShock": 0.0100,
+    "creditSpreadShockBps": 250.0,
+    "fxShock": -0.02,
+    "commodityShock": -0.08
+  },
+  "MERGER_ACQUISITION": {
+    "scenarioName": "M&A Market Disruption",
+    "eventType": "MERGER_ACQUISITION",
+    "description": "Antitrust blocks and financing re-pricing disrupt mega-deal valuations",
+    "equityShock": -0.03,
+    "interestRateShock": 0.0000,
+    "creditSpreadShockBps": 50.0,
+    "fxShock": 0.0,
+    "commodityShock": 0.0
+  },
+  "REGULATORY": {
+    "scenarioName": "Regulatory Crackdown",
+    "eventType": "REGULATORY",
+    "description": "Global regulators enforce higher capital requirements and antitrust scrutiny on tech and banks",
+    "equityShock": -0.06,
+    "interestRateShock": 0.0000,
+    "creditSpreadShockBps": 75.0,
+    "fxShock": -0.01,
+    "commodityShock": 0.0
+  },
+  "EARNINGS": {
+    "scenarioName": "Corporate Earnings Shock",
+    "eventType": "EARNINGS",
+    "description": "Widespread corporate margin compression and downward quarterly earnings revisions",
+    "equityShock": -0.05,
+    "interestRateShock": 0.0000,
+    "creditSpreadShockBps": 30.0,
+    "fxShock": 0.0,
+    "commodityShock": 0.0
+  },
+  "PRODUCT_LAUNCH": {
+    "scenarioName": "Product Disruption & Market Shift",
+    "eventType": "PRODUCT_LAUNCH",
+    "description": "Next-generation AI and semiconductor releases shift competitive moats across tech hardware",
+    "equityShock": -0.02,
+    "interestRateShock": 0.0000,
+    "creditSpreadShockBps": 20.0,
+    "fxShock": 0.0,
+    "commodityShock": 0.0
+  }
+}
