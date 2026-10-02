@@ -1,1 +1,3 @@
-"""FastAPI routers."""
+from app.routers.analysis import router as analysis_router
+
+__all__ = ["analysis_router"]
