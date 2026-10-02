@@ -59,7 +59,9 @@ def health_check():
     )
 
 from app.routers.analysis import router as analysis_router
+from app.routers.fetch import router as fetch_router
 app.include_router(analysis_router)
+app.include_router(fetch_router)
 
 if __name__ == "__main__":
     import uvicorn
