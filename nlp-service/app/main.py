@@ -1,11 +1,28 @@
-from fastapi import FastAPI
+import logging
+from contextlib import asynccontextmanager
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from app.config import settings
+from app.models.schemas import HealthResponse
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(name)s: %(message)s"
+)
+logger = logging.getLogger("riskengine.nlp")
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    logger.info("Initializing %s v%s...", settings.app_name, settings.app_version)
+    yield
+    logger.info("Shutting down %s...", settings.app_name)
 
 app = FastAPI(
     title=settings.app_name,
-    description="Microservice for financial sentiment analysis, event classification, and risk signal extraction",
-    version="0.1.0"
+    description="Dedicated microservice for financial sentiment analysis, keyword event classification, and risk signal extraction",
+    version=settings.app_version,
+    lifespan=lifespan
 )
 
 app.add_middleware(
@@ -16,13 +33,26 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-@app.get("/health")
+@app.exception_handler(Exception)
+async def global_exception_handler(request: Request, exc: Exception):
+    logger.error("Unhandled error processing %s: %s", request.url, str(exc), exc_info=True)
+    return JSONResponse(
+        status_code=500,
+        content={"error": "InternalServerError", "message": str(exc), "path": str(request.url.path)}
+    )
+
+@app.get("/health", response_model=HealthResponse, tags=["System"])
 def health_check():
-    return {
-        "status": "ok",
-        "service": "nlp-service",
-        "model_configured": settings.model_name
-    }
+    model_loaded = getattr(app.state, "model_loaded", False)
+    return HealthResponse(
+        status="ok",
+        service="nlp-service",
+        model_name=settings.model_name,
+        model_loaded=model_loaded,
+        version=settings.app_version,
+        environment=settings.environment,
+        device=settings.device
+    )
 
 if __name__ == "__main__":
     import uvicorn
