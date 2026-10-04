@@ -1,14 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import {
-  DollarSign,
   PieChart as PieIcon,
   Layers,
   RotateCcw,
   Search,
-  Filter,
-  CheckCircle2,
-  TrendingUp,
-  ShieldCheck,
 } from 'lucide-react';
 import { RiskEngineApi } from '../services/api';
 import { AllocationDonut } from '../components/charts/AllocationDonut';

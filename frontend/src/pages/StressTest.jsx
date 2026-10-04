@@ -1,15 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import {
   Zap,
-  Sliders,
-  TrendingDown,
-  ShieldAlert,
-  Layers,
   BarChart2,
   Table,
-  RotateCcw,
-  CheckCircle2,
-  AlertTriangle,
+  Layers,
 } from 'lucide-react';
 import { RiskEngineApi } from '../services/api';
 import { WaterfallChart } from '../components/charts/WaterfallChart';
@@ -389,7 +383,7 @@ export const StressTest = () => {
           </div>
 
           <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
-            Executed: {new Date(result?.executedAt || Date.now()).toLocaleTimeString()}
+            Executed: {result?.executedAt ? new Date(result.executedAt).toLocaleTimeString() : 'Live'}
           </span>
         </div>
 

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Activity, Zap, RefreshCw, Radio } from 'lucide-react';
+import { Zap, RefreshCw } from 'lucide-react';
 import { RiskEngineApi } from '../../services/api';
 
 export const Header = () => {

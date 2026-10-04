@@ -10,8 +10,47 @@ import {
   ReferenceLine,
 } from 'recharts';
 
+const CustomTooltip = ({ active, payload, label }) => {
+  if (active && payload && payload.length) {
+    const data = payload[0].payload;
+    const val = data.sentiment;
+    const isBullish = val > 0;
+    return (
+      <div
+        style={{
+          backgroundColor: '#0f172a',
+          border: '1px solid var(--border-medium)',
+          padding: '0.65rem 0.85rem',
+          borderRadius: '8px',
+          boxShadow: '0 4px 15px rgba(0,0,0,0.5)',
+          fontFamily: 'var(--font-sans)',
+        }}
+      >
+        <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '0.25rem' }}>
+          Time: <span style={{ color: '#fff', fontFamily: 'var(--font-mono)' }}>{label}</span> | Entity: {data.entity}
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Sentiment:</span>
+          <span
+            style={{
+              fontFamily: 'var(--font-mono)',
+              fontWeight: '700',
+              color: isBullish ? '#34d399' : '#f87171',
+            }}
+          >
+            {val > 0 ? `+${val.toFixed(2)}` : val.toFixed(2)} ({isBullish ? 'Bullish' : 'Bearish'})
+          </span>
+        </div>
+        <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.2rem' }}>
+          Impact Score: <span style={{ color: '#f59e0b', fontWeight: '600' }}>{data.impact}/10</span>
+        </div>
+      </div>
+    );
+  }
+  return null;
+};
+
 export const SentimentArea = ({ signals = [] }) => {
-  // Generate chronological sentiment trajectory from signals
   const chartData = signals.length > 0
     ? signals.map((s, idx) => ({
         time: s.timestamp ? s.timestamp.substring(11, 16) : `T-${idx}`,
@@ -28,46 +67,6 @@ export const SentimentArea = ({ signals = [] }) => {
         { time: '15:00', sentiment: -0.78, impact: 9, entity: 'Crude Oil' },
       ];
 
-  const CustomTooltip = ({ active, payload, label }) => {
-    if (active && payload && payload.length) {
-      const data = payload[0].payload;
-      const val = data.sentiment;
-      const isBullish = val > 0;
-      return (
-        <div
-          style={{
-            backgroundColor: '#0f172a',
-            border: '1px solid var(--border-medium)',
-            padding: '0.65rem 0.85rem',
-            borderRadius: '8px',
-            boxShadow: '0 4px 15px rgba(0,0,0,0.5)',
-            fontFamily: 'var(--font-sans)',
-          }}
-        >
-          <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '0.25rem' }}>
-            Time: <span style={{ color: '#fff', fontFamily: 'var(--font-mono)' }}>{label}</span> | Entity: {data.entity}
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Sentiment:</span>
-            <span
-              style={{
-                fontFamily: 'var(--font-mono)',
-                fontWeight: '700',
-                color: isBullish ? '#34d399' : '#f87171',
-              }}
-            >
-              {val > 0 ? `+${val.toFixed(2)}` : val.toFixed(2)} ({isBullish ? 'Bullish' : 'Bearish'})
-            </span>
-          </div>
-          <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.2rem' }}>
-            Impact Score: <span style={{ color: '#f59e0b', fontWeight: '600' }}>{data.impact}/10</span>
-          </div>
-        </div>
-      );
-    }
-    return null;
-  };
-
   return (
     <div style={{ width: '100%', height: 260 }}>
       <ResponsiveContainer width="100%" height="100%">
@@ -76,10 +75,6 @@ export const SentimentArea = ({ signals = [] }) => {
             <linearGradient id="sentimentGradient" x1="0" y1="0" x2="0" y2="1">
               <stop offset="5%" stopColor="#6366f1" stopOpacity={0.6} />
               <stop offset="95%" stopColor="#6366f1" stopOpacity={0.0} />
-            </linearGradient>
-            <linearGradient id="bearishGradient" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#ef4444" stopOpacity={0.5} />
-              <stop offset="95%" stopColor="#ef4444" stopOpacity={0.0} />
             </linearGradient>
           </defs>
           <CartesianGrid strokeDasharray="3 3" stroke="rgba(255, 255, 255, 0.05)" vertical={false} />

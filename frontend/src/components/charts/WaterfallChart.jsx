@@ -8,8 +8,31 @@ import {
   Tooltip,
   ResponsiveContainer,
   Cell,
-  ReferenceLine,
 } from 'recharts';
+
+const CustomTooltip = ({ active, payload }) => {
+  if (active && payload && payload.length) {
+    const d = payload[0].payload;
+    return (
+      <div
+        style={{
+          backgroundColor: '#0f172a',
+          border: '1px solid var(--border-medium)',
+          padding: '0.65rem 0.85rem',
+          borderRadius: '8px',
+          fontFamily: 'var(--font-sans)',
+          boxShadow: '0 4px 15px rgba(0,0,0,0.5)',
+        }}
+      >
+        <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginBottom: '0.25rem' }}>{d.name}</div>
+        <div style={{ fontSize: '1rem', fontWeight: '700', fontFamily: 'var(--font-mono)', color: d.color }}>
+          {d.displayValue}
+        </div>
+      </div>
+    );
+  }
+  return null;
+};
 
 export const WaterfallChart = ({ result }) => {
   if (!result) return null;
@@ -23,10 +46,6 @@ export const WaterfallChart = ({ result }) => {
     DERIVATIVE: -8.0,
   };
 
-  // Construct waterfall bars: base (invisible spacer) + impact bar
-  // Initial Portfolio Value starts at 0 to valBefore
-  // Then each asset class subtracts or adds
-  // Final Portfolio Value shows the remaining balance
   const data = [
     {
       name: 'Initial Value',
@@ -84,30 +103,6 @@ export const WaterfallChart = ({ result }) => {
     },
   ];
 
-  const CustomTooltip = ({ active, payload }) => {
-    if (active && payload && payload.length) {
-      const d = payload[0].payload;
-      return (
-        <div
-          style={{
-            backgroundColor: '#0f172a',
-            border: '1px solid var(--border-medium)',
-            padding: '0.65rem 0.85rem',
-            borderRadius: '8px',
-            fontFamily: 'var(--font-sans)',
-            boxShadow: '0 4px 15px rgba(0,0,0,0.5)',
-          }}
-        >
-          <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginBottom: '0.25rem' }}>{d.name}</div>
-          <div style={{ fontSize: '1rem', fontWeight: '700', fontFamily: 'var(--font-mono)', color: d.color }}>
-            {d.displayValue}
-          </div>
-        </div>
-      );
-    }
-    return null;
-  };
-
   return (
     <div style={{ width: '100%', height: 320 }}>
       <ResponsiveContainer width="100%" height="100%">
@@ -128,7 +123,6 @@ export const WaterfallChart = ({ result }) => {
             tickFormatter={(v) => `$${v}M`}
           />
           <Tooltip content={<CustomTooltip />} />
-          {/* Transparent bottom spacer to make waterfall effect */}
           <Bar dataKey="base" stackId="a" fill="transparent" />
           <Bar dataKey="val" stackId="a" radius={[4, 4, 0, 0]}>
             {data.map((entry, index) => (

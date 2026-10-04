@@ -8,6 +8,34 @@ import {
   Legend,
 } from 'recharts';
 
+const CustomTooltip = ({ active, payload }) => {
+  if (active && payload && payload.length) {
+    const d = payload[0].payload;
+    return (
+      <div
+        style={{
+          backgroundColor: '#0f172a',
+          border: '1px solid var(--border-medium)',
+          padding: '0.65rem 0.85rem',
+          borderRadius: '8px',
+          fontFamily: 'var(--font-sans)',
+          boxShadow: '0 4px 15px rgba(0,0,0,0.5)',
+        }}
+      >
+        <div style={{ fontSize: '0.8rem', fontWeight: '600', color: d.color }}>
+          {d.name}
+        </div>
+        <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.5rem', marginTop: '0.2rem' }}>
+          <span style={{ fontSize: '1.05rem', fontWeight: '700', fontFamily: 'var(--font-mono)', color: '#ffffff' }}>
+            ${d.value.toFixed(1)}M
+          </span>
+        </div>
+      </div>
+    );
+  }
+  return null;
+};
+
 export const AllocationDonut = ({ data = [], mode = 'assetType' }) => {
   const ASSET_COLORS = {
     BOND: '#3b82f6',
@@ -28,40 +56,6 @@ export const AllocationDonut = ({ data = [], mode = 'assetType' }) => {
       ? (ASSET_COLORS[d.name] || '#64748b')
       : SECTOR_COLORS[index % SECTOR_COLORS.length],
   }));
-
-  const total = chartData.reduce((acc, curr) => acc + curr.value, 0);
-
-  const CustomTooltip = ({ active, payload }) => {
-    if (active && payload && payload.length) {
-      const d = payload[0].payload;
-      const share = total > 0 ? ((d.value / total) * 100).toFixed(1) : 0;
-      return (
-        <div
-          style={{
-            backgroundColor: '#0f172a',
-            border: '1px solid var(--border-medium)',
-            padding: '0.65rem 0.85rem',
-            borderRadius: '8px',
-            fontFamily: 'var(--font-sans)',
-            boxShadow: '0 4px 15px rgba(0,0,0,0.5)',
-          }}
-        >
-          <div style={{ fontSize: '0.8rem', fontWeight: '600', color: d.color }}>
-            {d.name}
-          </div>
-          <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.5rem', marginTop: '0.2rem' }}>
-            <span style={{ fontSize: '1.05rem', fontWeight: '700', fontFamily: 'var(--font-mono)', color: '#ffffff' }}>
-              ${d.value.toFixed(1)}M
-            </span>
-            <span style={{ fontSize: '0.75rem', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)' }}>
-              ({share}%)
-            </span>
-          </div>
-        </div>
-      );
-    }
-    return null;
-  };
 
   return (
     <div style={{ width: '100%', height: 260 }}>

@@ -8,7 +8,6 @@ import {
   History,
   ShieldAlert,
   Server,
-  Terminal,
 } from 'lucide-react';
 
 export const Sidebar = () => {

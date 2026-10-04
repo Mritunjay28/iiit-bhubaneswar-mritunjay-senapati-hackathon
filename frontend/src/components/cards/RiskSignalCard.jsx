@@ -1,6 +1,6 @@
 import React from 'react';
 import { EventBadge, SentimentBadge, ImpactBadge } from '../common/Badge';
-import { Radio, AlertTriangle, ArrowRight } from 'lucide-react';
+import { AlertTriangle, ArrowRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 export const RiskSignalCard = ({ signal }) => {
