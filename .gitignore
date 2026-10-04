@@ -76,5 +76,9 @@ ehthumbs.db
 submission_guidline.txt
 submission_guideline*.txt
 
+# Project plan & internal notes (do not track in git)
+project_plan.md
+
 # Docker
 .docker/
+
