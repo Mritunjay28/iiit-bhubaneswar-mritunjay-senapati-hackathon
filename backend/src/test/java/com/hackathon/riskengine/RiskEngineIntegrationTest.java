@@ -112,4 +112,26 @@ public class RiskEngineIntegrationTest {
                 .andExpect(jsonPath("$.totalSignals", greaterThan(0)))
                 .andExpect(jsonPath("$.eventTypeDistribution").isMap());
     }
+
+    @Test
+    @DisplayName("GET /api/portfolio/{id} with invalid ID returns structured 404 ApiErrorResponse")
+    public void testGetAssetNotFoundReturnsStructured404() throws Exception {
+        mockMvc.perform(get("/api/portfolio/999999"))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.status").value(404))
+                .andExpect(jsonPath("$.error").value("Not Found"))
+                .andExpect(jsonPath("$.message", containsString("Portfolio asset not found with ID: 999999")))
+                .andExpect(jsonPath("$.timestamp").exists());
+    }
+
+    @Test
+    @DisplayName("GET /api/stress-tests/{id} with invalid ID returns structured 404 ApiErrorResponse")
+    public void testGetStressTestNotFoundReturnsStructured404() throws Exception {
+        mockMvc.perform(get("/api/stress-tests/999999"))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.status").value(404))
+                .andExpect(jsonPath("$.error").value("Not Found"))
+                .andExpect(jsonPath("$.message", containsString("Stress test result not found with ID: 999999")))
+                .andExpect(jsonPath("$.timestamp").exists());
+    }
 }

@@ -3,6 +3,7 @@ package com.hackathon.riskengine.controller;
 import com.hackathon.riskengine.dto.ShockScenarioDto;
 import com.hackathon.riskengine.dto.StressTestRequestDto;
 import com.hackathon.riskengine.dto.StressTestSummaryResponseDto;
+import com.hackathon.riskengine.exception.ResourceNotFoundException;
 import com.hackathon.riskengine.model.EventType;
 import com.hackathon.riskengine.model.StressTestResult;
 import com.hackathon.riskengine.repository.StressTestResultRepository;
@@ -44,9 +45,9 @@ public class StressTestController {
 
     @GetMapping("/{id}")
     public ResponseEntity<StressTestSummaryResponseDto> getStressTestById(@PathVariable Long id) {
-        return stressTestResultRepository.findById(id)
-                .map(result -> ResponseEntity.ok(stressTestEngineService.mapToDto(result, null, null, null, null, null, null)))
-                .orElse(ResponseEntity.notFound().build());
+        StressTestResult result = stressTestResultRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Stress test result not found with ID: " + id));
+        return ResponseEntity.ok(stressTestEngineService.mapToDto(result, null, null, null, null, null, null));
     }
 
     @GetMapping("/scenarios")

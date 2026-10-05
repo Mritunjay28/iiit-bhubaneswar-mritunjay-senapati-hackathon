@@ -4,6 +4,7 @@ import com.hackathon.riskengine.dto.PortfolioSummaryDto;
 import com.hackathon.riskengine.model.AssetType;
 import com.hackathon.riskengine.model.PortfolioAsset;
 import com.hackathon.riskengine.service.PortfolioService;
+import com.hackathon.riskengine.exception.ResourceNotFoundException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -39,9 +40,9 @@ public class PortfolioController {
 
     @GetMapping("/{id}")
     public ResponseEntity<PortfolioAsset> getAssetById(@PathVariable Long id) {
-        return portfolioService.getAssetById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+        PortfolioAsset asset = portfolioService.getAssetById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Portfolio asset not found with ID: " + id));
+        return ResponseEntity.ok(asset);
     }
 
     @PostMapping
