@@ -1,0 +1,18 @@
+# S&P Global & CRISIL Campus Hackathon — Dependencies Specification
+# ==============================================================================
+# 1. Python NLP Microservice & Presentation Generation Dependencies
+fastapi>=0.110.0
+uvicorn[standard]>=0.28.0
+pydantic>=2.6.0
+transformers>=4.38.0
+torch>=2.2.0
+pandas>=2.2.0
+requests>=2.31.0
+python-pptx>=1.0.0
+pillow>=10.0.0
+
+# ==============================================================================
+# 2. Multi-Service Application Ecosystem (in /src)
+#    - Spring Boot Backend (Java 21 / Spring Boot 3.3.4): src/backend/pom.xml
+#    - React Dashboard (React 18 / Vite 5 / Recharts):    src/frontend/package.json
+#    - Full Stack Orchestration:                          docker-compose.yml
