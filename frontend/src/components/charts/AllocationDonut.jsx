@@ -36,7 +36,7 @@ const CustomTooltip = ({ active, payload }) => {
   return null;
 };
 
-export const AllocationDonut = ({ data = [], mode = 'assetType' }) => {
+export const AllocationDonut = React.memo(({ data = [], mode = 'assetType' }) => {
   const ASSET_COLORS = {
     BOND: '#3b82f6',
     DERIVATIVE: '#a855f7',
@@ -85,4 +85,6 @@ export const AllocationDonut = ({ data = [], mode = 'assetType' }) => {
       </ResponsiveContainer>
     </div>
   );
-};
+});
+
+AllocationDonut.displayName = 'AllocationDonut';

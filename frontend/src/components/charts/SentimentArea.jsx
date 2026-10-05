@@ -50,7 +50,7 @@ const CustomTooltip = ({ active, payload, label }) => {
   return null;
 };
 
-export const SentimentArea = ({ signals = [] }) => {
+export const SentimentArea = React.memo(({ signals = [] }) => {
   const chartData = signals.length > 0
     ? signals.map((s, idx) => ({
         time: s.timestamp ? s.timestamp.substring(11, 16) : `T-${idx}`,
@@ -107,4 +107,6 @@ export const SentimentArea = ({ signals = [] }) => {
       </ResponsiveContainer>
     </div>
   );
-};
+});
+
+SentimentArea.displayName = 'SentimentArea';

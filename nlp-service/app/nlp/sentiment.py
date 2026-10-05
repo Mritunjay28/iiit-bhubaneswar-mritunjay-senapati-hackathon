@@ -113,7 +113,37 @@ class SentimentAnalyzer:
         return self._lexical_analyze(text)
 
     def analyze_batch(self, texts: List[str]) -> List[Dict[str, Any]]:
-        """Batch analysis for improved throughput."""
+        """High-throughput batch analysis supporting native FinBERT pipeline batching."""
+        if not texts:
+            return []
+
+        if self.is_loaded and not self.is_fallback and self.pipe is not None:
+            try:
+                truncated_texts = [t[:512] if t else "" for t in texts]
+                batch_results = self.pipe(truncated_texts, batch_size=16)
+                outputs = []
+                for res in batch_results:
+                    scores = {r["label"].lower(): float(r["score"]) for r in res}
+                    pos = scores.get("positive", 0.0)
+                    neg = scores.get("negative", 0.0)
+                    neu = scores.get("neutral", 0.0)
+                    net_score = round(max(-1.0, min(1.0, pos - neg)), 4)
+                    dominant = max(scores, key=scores.get)
+                    outputs.append({
+                        "sentiment_score": net_score,
+                        "sentiment_label": dominant,
+                        "distribution": {
+                            "positive": round(pos, 4),
+                            "negative": round(neg, 4),
+                            "neutral": round(neu, 4)
+                        },
+                        "model": self.model_name,
+                        "is_fallback": False
+                    })
+                return outputs
+            except Exception as e:
+                logger.warning("FinBERT batch inference error: %s. Reverting to sequential lexical pass.", str(e))
+
         return [self.analyze(t) for t in texts]
 
     def _lexical_analyze(self, text: str) -> Dict[str, Any]:

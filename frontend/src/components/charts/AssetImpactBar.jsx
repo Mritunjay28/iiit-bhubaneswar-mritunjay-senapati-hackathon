@@ -55,7 +55,7 @@ const CustomTooltip = ({ active, payload }) => {
   return null;
 };
 
-export const AssetImpactBar = ({ assetDetails = [] }) => {
+export const AssetImpactBar = React.memo(({ assetDetails = [] }) => {
   const data = (assetDetails.length > 0 ? assetDetails : [])
     .slice(0, 10)
     .map(a => ({
@@ -101,4 +101,6 @@ export const AssetImpactBar = ({ assetDetails = [] }) => {
       </ResponsiveContainer>
     </div>
   );
-};
+});
+
+AssetImpactBar.displayName = 'AssetImpactBar';

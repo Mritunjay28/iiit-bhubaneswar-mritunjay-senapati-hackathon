@@ -34,7 +34,7 @@ const CustomTooltip = ({ active, payload }) => {
   return null;
 };
 
-export const WaterfallChart = ({ result }) => {
+export const WaterfallChart = React.memo(({ result }) => {
   if (!result) return null;
 
   const valBefore = result.portfolioValueBefore || 585.0;
@@ -133,4 +133,6 @@ export const WaterfallChart = ({ result }) => {
       </ResponsiveContainer>
     </div>
   );
-};
+});
+
+WaterfallChart.displayName = 'WaterfallChart';
