@@ -417,15 +417,15 @@ public class NlpServiceClient {
     }
 
     private Path resolveDataFile(String fileName) {
-        // 1. Check relative data/ folder
         Path path = Paths.get("data", fileName);
         if (Files.exists(path)) return path;
 
-        // 2. Check parent data/ folder
         path = Paths.get("..", "data", fileName);
         if (Files.exists(path)) return path;
 
-        // 3. Fallback to current working directory
+        path = Paths.get("..", "..", "data", fileName);
+        if (Files.exists(path)) return path;
+
         return Paths.get(fileName);
     }
 }

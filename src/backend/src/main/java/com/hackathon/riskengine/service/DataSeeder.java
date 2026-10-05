@@ -148,6 +148,9 @@ public class DataSeeder implements CommandLineRunner {
         path = Paths.get("..", "data", fileName);
         if (Files.exists(path)) return path;
 
+        path = Paths.get("..", "..", "data", fileName);
+        if (Files.exists(path)) return path;
+
         return Paths.get(fileName);
     }
 }
