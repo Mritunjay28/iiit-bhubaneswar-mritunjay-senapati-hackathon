@@ -88,13 +88,8 @@ public class DataSeeder implements CommandLineRunner {
 
     private void seedSampleNewsSignals() {
         try {
-            Path path = resolveDataFile("sample_news.json");
-            if (Files.exists(path)) {
-                List<Map<String, Object>> newsList = objectMapper.readValue(
-                        path.toFile(),
-                        new TypeReference<>() {}
-                );
-
+            List<Map<String, Object>> newsList = loadNewsData();
+            if (!newsList.isEmpty()) {
                 logger.info("Seeding {} initial sample news signals...", newsList.size());
                 for (int i = 0; i < newsList.size(); i++) {
                     Map<String, Object> item = newsList.get(i);
@@ -120,10 +115,29 @@ public class DataSeeder implements CommandLineRunner {
                     riskSignalRepository.save(signal);
                 }
                 logger.info("Successfully seeded {} initial risk signals.", riskSignalRepository.count());
+            } else {
+                logger.info("No external sample_news.json found; database ready for dynamic news ingestion.");
             }
         } catch (Exception e) {
             logger.warn("Could not seed sample news: {}", e.getMessage());
         }
+    }
+
+    private List<Map<String, Object>> loadNewsData() {
+        try {
+            Path path = resolveDataFile("sample_news.json");
+            if (Files.exists(path)) {
+                return objectMapper.readValue(path.toFile(), new TypeReference<>() {});
+            }
+            try (var is = getClass().getClassLoader().getResourceAsStream("data/sample_news.json")) {
+                if (is != null) {
+                    return objectMapper.readValue(is, new TypeReference<>() {});
+                }
+            }
+        } catch (Exception e) {
+            logger.warn("Could not resolve sample_news.json: {}", e.getMessage());
+        }
+        return Collections.emptyList();
     }
 
     private Path resolveDataFile(String fileName) {

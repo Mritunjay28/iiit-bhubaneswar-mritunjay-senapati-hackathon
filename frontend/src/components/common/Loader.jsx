@@ -42,6 +42,23 @@ export const Loader = ({ message = 'Computing quantitative risk metrics...' }) =
   );
 };
 
+export const Spinner = ({ size = 16, color = '#ffffff' }) => {
+  return (
+    <span
+      style={{
+        width: `${size}px`,
+        height: `${size}px`,
+        borderRadius: '50%',
+        border: '2px solid rgba(255, 255, 255, 0.25)',
+        borderTopColor: color,
+        display: 'inline-block',
+        animation: 'spin 0.6s linear infinite',
+        flexShrink: 0,
+      }}
+    />
+  );
+};
+
 export const TableSkeleton = ({ rows = 5, cols = 5 }) => {
   return (
     <div style={{ width: '100%', padding: '1rem 0' }}>
@@ -68,6 +85,57 @@ export const TableSkeleton = ({ rows = 5, cols = 5 }) => {
               }}
             />
           ))}
+        </div>
+      ))}
+    </div>
+  );
+};
+
+export const CardSkeleton = ({ count = 4 }) => {
+  return (
+    <div
+      style={{
+        display: 'grid',
+        gridTemplateColumns: `repeat(auto-fit, minmax(220px, 1fr))`,
+        gap: '1.25rem',
+        width: '100%',
+      }}
+    >
+      {Array.from({ length: count }).map((_, idx) => (
+        <div
+          key={idx}
+          className="glass-panel"
+          style={{
+            padding: '1.25rem',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '0.75rem',
+          }}
+        >
+          <div
+            style={{
+              width: '40%',
+              height: '14px',
+              backgroundColor: 'rgba(255, 255, 255, 0.05)',
+              borderRadius: '4px',
+            }}
+          />
+          <div
+            style={{
+              width: '70%',
+              height: '28px',
+              backgroundColor: 'rgba(255, 255, 255, 0.08)',
+              borderRadius: '6px',
+            }}
+          />
+          <div
+            style={{
+              width: '50%',
+              height: '12px',
+              backgroundColor: 'rgba(255, 255, 255, 0.04)',
+              borderRadius: '4px',
+            }}
+          />
         </div>
       ))}
     </div>

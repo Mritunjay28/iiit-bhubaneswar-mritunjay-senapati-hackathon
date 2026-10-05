@@ -9,7 +9,7 @@ import {
 } from 'lucide-react';
 import { RiskEngineApi } from '../services/api';
 import { EventBadge, SentimentBadge, ImpactBadge } from '../components/common/Badge';
-import { Loader } from '../components/common/Loader';
+import { Loader, Spinner } from '../components/common/Loader';
 
 export const RiskSignals = () => {
   const navigate = useNavigate();
@@ -115,7 +115,7 @@ export const RiskSignals = () => {
             disabled={ingesting}
             className="btn btn-outline"
           >
-            <Download size={14} />
+            {ingesting ? <Spinner size={14} color="#6366f1" /> : <Download size={14} />}
             <span>Ingest GDELT News</span>
           </button>
 
@@ -124,7 +124,7 @@ export const RiskSignals = () => {
             disabled={ingesting}
             className="btn btn-outline"
           >
-            <Download size={14} />
+            {ingesting ? <Spinner size={14} color="#6366f1" /> : <Download size={14} />}
             <span>Load Kaggle Tweets</span>
           </button>
 

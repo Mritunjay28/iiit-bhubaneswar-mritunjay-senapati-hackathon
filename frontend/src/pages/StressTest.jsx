@@ -8,7 +8,7 @@ import {
 import { RiskEngineApi } from '../services/api';
 import { WaterfallChart } from '../components/charts/WaterfallChart';
 import { AssetImpactBar } from '../components/charts/AssetImpactBar';
-import { Loader } from '../components/common/Loader';
+import { Loader, Spinner } from '../components/common/Loader';
 import { EventBadge } from '../components/common/Badge';
 
 export const StressTest = () => {
@@ -134,7 +134,7 @@ export const StressTest = () => {
               className="btn btn-primary"
               style={{ minWidth: '170px' }}
             >
-              <Zap size={16} />
+              {executing ? <Spinner size={15} color="#ffffff" /> : <Zap size={16} />}
               <span>{executing ? 'Executing Shock...' : 'Execute Stress Test'}</span>
             </button>
           </div>
