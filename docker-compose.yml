@@ -23,7 +23,7 @@ services:
 
   nlp-service:
     build:
-      context: ./nlp-service
+      context: ./src/nlp-service
       dockerfile: Dockerfile
     container_name: riskengine-nlp
     restart: unless-stopped
@@ -50,7 +50,7 @@ services:
 
   backend:
     build:
-      context: ./backend
+      context: ./src/backend
       dockerfile: Dockerfile
     container_name: riskengine-backend
     restart: unless-stopped
@@ -79,7 +79,7 @@ services:
 
   frontend:
     build:
-      context: ./frontend
+      context: ./src/frontend
       dockerfile: Dockerfile
     container_name: riskengine-frontend
     restart: unless-stopped
