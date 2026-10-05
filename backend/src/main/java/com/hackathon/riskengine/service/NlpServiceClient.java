@@ -299,7 +299,10 @@ public class NlpServiceClient {
 
     private boolean matchesAny(String text, String... keywords) {
         for (String kw : keywords) {
-            if (text.contains(kw)) return true;
+            String regex = "\\b" + Pattern.quote(kw) + "\\b";
+            if (Pattern.compile(regex, Pattern.CASE_INSENSITIVE).matcher(text).find()) {
+                return true;
+            }
         }
         return false;
     }
