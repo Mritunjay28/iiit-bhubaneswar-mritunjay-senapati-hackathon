@@ -83,6 +83,10 @@ submission_guideline*.txt
 
 # Project plan & internal notes (do not track in git)
 project_plan.md
+presentation.md
+presentation.ppt
+presentation.pdf
+demo_walkthrough_guide.md
 
 # Docker
 .docker/
