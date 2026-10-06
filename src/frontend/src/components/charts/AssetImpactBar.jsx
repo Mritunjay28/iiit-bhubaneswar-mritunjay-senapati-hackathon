@@ -16,33 +16,33 @@ const CustomTooltip = ({ active, payload }) => {
     return (
       <div
         style={{
-          backgroundColor: '#0f172a',
-          border: '1px solid var(--border-medium)',
+          backgroundColor: '#15171c',
+          border: '1px solid #242731',
           padding: '0.75rem 1rem',
-          borderRadius: '8px',
+          borderRadius: '6px',
           fontFamily: 'var(--font-sans)',
-          boxShadow: '0 4px 15px rgba(0,0,0,0.5)',
+          boxShadow: '0 4px 15px rgba(0,0,0,0.6)',
         }}
       >
-        <div style={{ fontSize: '0.85rem', fontWeight: '700', color: '#ffffff', marginBottom: '0.35rem' }}>
-          {d.fullName} <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>({d.type})</span>
+        <div style={{ fontSize: 'var(--text-body-sm)', lineHeight: 'var(--leading-snug)', letterSpacing: 'var(--tracking-tight)', fontWeight: '700', color: '#ffffff', marginBottom: '0.35rem' }}>
+          {d.fullName} <span style={{ fontSize: 'var(--text-micro)', color: 'var(--text-muted)' }}>({d.type})</span>
         </div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem', fontSize: '0.775rem' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', gap: '1rem', color: '#94a3b8' }}>
-            <span>Notional Before:</span>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem', fontSize: 'var(--text-caption)', lineHeight: 'var(--leading-normal)', letterSpacing: 'var(--tracking-normal)' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', gap: '1rem', color: '#9ca3af' }}>
+            <span>Baseline Notional:</span>
             <span style={{ fontFamily: 'var(--font-mono)', color: '#ffffff' }}>${d.before.toFixed(2)}M</span>
           </div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', gap: '1rem', color: '#94a3b8' }}>
-            <span>Stressed Value:</span>
+          <div style={{ display: 'flex', justifyContent: 'space-between', gap: '1rem', color: '#9ca3af' }}>
+            <span>Stressed Valuation:</span>
             <span style={{ fontFamily: 'var(--font-mono)', color: '#38bdf8' }}>${d.after.toFixed(2)}M</span>
           </div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', gap: '1rem', color: '#94a3b8' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', gap: '1rem', color: '#9ca3af' }}>
             <span>Net PnL Impact:</span>
             <span
               style={{
                 fontFamily: 'var(--font-mono)',
                 fontWeight: '700',
-                color: d.loss >= 0 ? '#34d399' : '#f87171',
+                color: d.loss >= 0 ? '#10b981' : '#ef4444',
               }}
             >
               {d.loss >= 0 ? '+' : ''}${d.loss.toFixed(2)}M ({d.shock.toFixed(1)}%)
@@ -69,14 +69,14 @@ export const AssetImpactBar = React.memo(({ assetDetails = [] }) => {
     }));
 
   return (
-    <div style={{ width: '100%', height: 320 }}>
+    <div style={{ width: '100%', height: 300 }}>
       <ResponsiveContainer width="100%" height="100%">
-        <BarChart data={data} margin={{ top: 20, right: 20, left: 10, bottom: 40 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="rgba(255, 255, 255, 0.05)" vertical={false} />
+        <BarChart data={data} margin={{ top: 15, right: 15, left: 5, bottom: 35 }}>
+          <CartesianGrid strokeDasharray="2 2" stroke="#242731" vertical={false} />
           <XAxis
             dataKey="name"
             stroke="var(--text-muted)"
-            fontSize={10}
+            fontSize={11}
             angle={-25}
             textAnchor="end"
             interval={0}
@@ -93,10 +93,10 @@ export const AssetImpactBar = React.memo(({ assetDetails = [] }) => {
           <Legend
             verticalAlign="top"
             align="right"
-            wrapperStyle={{ paddingBottom: '10px', fontSize: '11px' }}
+            wrapperStyle={{ paddingBottom: '10px', fontSize: 'var(--text-micro)', letterSpacing: 'var(--tracking-wide)' }}
           />
-          <Bar name="Initial Notional ($M)" dataKey="before" fill="#6366f1" radius={[3, 3, 0, 0]} />
-          <Bar name="Stressed Value ($M)" dataKey="after" fill="#06b6d4" radius={[3, 3, 0, 0]} />
+          <Bar name="Initial Notional ($M)" dataKey="before" fill="#2563eb" radius={[2, 2, 0, 0]} />
+          <Bar name="Stressed Value ($M)" dataKey="after" fill="#0284c7" radius={[2, 2, 0, 0]} />
         </BarChart>
       </ResponsiveContainer>
     </div>

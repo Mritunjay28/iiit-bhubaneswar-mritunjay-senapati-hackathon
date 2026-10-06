@@ -16,16 +16,16 @@ const CustomTooltip = ({ active, payload }) => {
     return (
       <div
         style={{
-          backgroundColor: '#0f172a',
-          border: '1px solid var(--border-medium)',
+          backgroundColor: '#15171c',
+          border: '1px solid #242731',
           padding: '0.65rem 0.85rem',
-          borderRadius: '8px',
+          borderRadius: '6px',
           fontFamily: 'var(--font-sans)',
-          boxShadow: '0 4px 15px rgba(0,0,0,0.5)',
+          boxShadow: '0 4px 15px rgba(0,0,0,0.6)',
         }}
       >
-        <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginBottom: '0.25rem' }}>{d.name}</div>
-        <div style={{ fontSize: '1rem', fontWeight: '700', fontFamily: 'var(--font-mono)', color: d.color }}>
+        <div style={{ fontSize: 'var(--text-caption)', lineHeight: 'var(--leading-snug)', letterSpacing: 'var(--tracking-normal)', color: 'var(--text-secondary)', marginBottom: '0.25rem' }}>{d.name}</div>
+        <div style={{ fontSize: 'var(--text-h2)', lineHeight: 'var(--leading-tight)', letterSpacing: 'var(--tracking-tightest)', fontWeight: '700', fontFamily: 'var(--font-mono)', color: d.color }}>
           {d.displayValue}
         </div>
       </div>
@@ -54,7 +54,7 @@ export const WaterfallChart = React.memo(({ result }) => {
       pnl: valBefore,
       base: 0,
       val: valBefore,
-      color: '#6366f1',
+      color: '#2563eb', // Electric Blue baseline
     },
     {
       name: 'Bonds PnL',
@@ -81,7 +81,7 @@ export const WaterfallChart = React.memo(({ result }) => {
       pnl: assetClassPnl.EQUITY || 0,
       base: valBefore + (assetClassPnl.BOND || 0) + (assetClassPnl.LOAN || 0) + Math.min(0, assetClassPnl.EQUITY || 0),
       val: Math.abs(assetClassPnl.EQUITY || 0),
-      color: (assetClassPnl.EQUITY || 0) >= 0 ? '#10b981' : '#eab308',
+      color: (assetClassPnl.EQUITY || 0) >= 0 ? '#10b981' : '#f59e0b',
     },
     {
       name: 'Derivatives PnL',
@@ -90,7 +90,7 @@ export const WaterfallChart = React.memo(({ result }) => {
       pnl: assetClassPnl.DERIVATIVE || 0,
       base: valAfter,
       val: Math.abs(assetClassPnl.DERIVATIVE || 0),
-      color: (assetClassPnl.DERIVATIVE || 0) >= 0 ? '#10b981' : '#a855f7',
+      color: (assetClassPnl.DERIVATIVE || 0) >= 0 ? '#10b981' : '#0284c7', // Cyan instead of purple
     },
     {
       name: 'Stressed Value',
@@ -99,21 +99,21 @@ export const WaterfallChart = React.memo(({ result }) => {
       pnl: valAfter,
       base: 0,
       val: valAfter,
-      color: '#06b6d4',
+      color: '#0284c7',
     },
   ];
 
   return (
-    <div style={{ width: '100%', height: 320 }}>
+    <div style={{ width: '100%', height: 300 }}>
       <ResponsiveContainer width="100%" height="100%">
-        <BarChart data={data} margin={{ top: 20, right: 20, left: 10, bottom: 20 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="rgba(255, 255, 255, 0.05)" vertical={false} />
+        <BarChart data={data} margin={{ top: 15, right: 15, left: 5, bottom: 15 }}>
+          <CartesianGrid strokeDasharray="2 2" stroke="#242731" vertical={false} />
           <XAxis
             dataKey="name"
             stroke="var(--text-muted)"
             fontSize={11}
             tickLine={false}
-            axisLine={{ stroke: 'rgba(255, 255, 255, 0.1)' }}
+            axisLine={{ stroke: '#242731' }}
           />
           <YAxis
             stroke="var(--text-muted)"
@@ -124,7 +124,7 @@ export const WaterfallChart = React.memo(({ result }) => {
           />
           <Tooltip content={<CustomTooltip />} />
           <Bar dataKey="base" stackId="a" fill="transparent" />
-          <Bar dataKey="val" stackId="a" radius={[4, 4, 0, 0]}>
+          <Bar dataKey="val" stackId="a" radius={[3, 3, 0, 0]}>
             {data.map((entry, index) => (
               <Cell key={`cell-${index}`} fill={entry.color} />
             ))}

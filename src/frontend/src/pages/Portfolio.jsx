@@ -1,15 +1,31 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   PieChart as PieIcon,
   Layers,
   RotateCcw,
   Search,
+  Briefcase,
+  Zap,
+  X,
 } from 'lucide-react';
 import { RiskEngineApi } from '../services/api';
 import { AllocationDonut } from '../components/charts/AllocationDonut';
+import { AssetBadge } from '../components/common/Badge';
 import { Loader } from '../components/common/Loader';
 
+const SECTOR_BAR_COLORS = [
+  '#2563eb', // Blue
+  '#10b981', // Green
+  '#f59e0b', // Amber
+  '#0284c7', // Cyan
+  '#059669', // Darker emerald
+  '#d97706', // Darker amber
+  '#38bdf8', // Sky blue
+];
+
 export const Portfolio = () => {
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [assets, setAssets] = useState([]);
   const [summary, setSummary] = useState(null);
@@ -51,7 +67,7 @@ export const Portfolio = () => {
   };
 
   if (loading) {
-    return <Loader message="Analyzing synthetic multi-asset portfolio and exposures..." />;
+    return <Loader message="Analyzing multi-asset portfolio exposures, duration profiles, and credit spreads..." />;
   }
 
   const filteredAssets = assets.filter(a => {
@@ -82,43 +98,126 @@ export const Portfolio = () => {
         { name: 'Commodity', value: 35.0 },
       ];
 
+  const totalNotional = summary?.totalNotional || 585.0;
+
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.75rem' }}>
-      {/* Portfolio Top Bar with Reset Action */}
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+      {/* Portfolio Top Bar with Reset Action & The ONE CTA */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem' }}>
         <div>
-          <h2 style={{ fontSize: '1.25rem', fontWeight: '700', color: '#ffffff', margin: 0 }}>
-            Synthetic Multi-Asset Benchmark Portfolio
+          <h2 style={{ fontSize: 'var(--text-h1)', lineHeight: 'var(--leading-snug)', letterSpacing: 'var(--tracking-tighter)', fontWeight: '800', color: '#ffffff', margin: 0, display: 'flex', alignItems: 'center', gap: '0.5rem', fontFamily: 'var(--font-display)' }}>
+            <span style={{
+              width: '26px',
+              height: '26px',
+              borderRadius: '4px',
+              backgroundColor: '#10b981',
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}>
+              <Briefcase size={15} color="#ffffff" />
+            </span>
+            Multi-Asset Benchmark Portfolio
           </h2>
-          <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', margin: '0.15rem 0 0 0' }}>
-            $585.0M Total Notional configured with fixed income duration, loan spreads, and derivatives
+          <p style={{ fontSize: 'var(--text-caption)', lineHeight: 'var(--leading-relaxed)', letterSpacing: 'var(--tracking-normal)', color: 'var(--text-secondary)', margin: '0.2rem 0 0 0' }}>
+            15 institutional positions across sovereign bonds, corporate loans, equity indices, and derivatives
           </p>
         </div>
 
-        <button
-          onClick={handleReset}
-          disabled={resetting}
-          className="btn btn-outline"
-        >
-          <RotateCcw size={14} className={resetting ? 'pulse-indicator' : ''} />
-          <span>{resetting ? 'Resetting...' : 'Reset Default Portfolio'}</span>
-        </button>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+          <button
+            onClick={handleReset}
+            disabled={resetting}
+            className="btn btn-outline"
+            style={{ fontSize: 'var(--text-body-sm)', padding: '0.45rem 0.8rem' }}
+          >
+            <RotateCcw size={13} className={resetting ? 'spin-icon' : ''} />
+            <span>{resetting ? 'Resetting...' : 'Reset Default'}</span>
+          </button>
+
+          {/* The ONE Repeated CTA */}
+          <button
+            onClick={() => navigate('/stress-test')}
+            className="btn btn-cta"
+            style={{ fontSize: 'var(--text-body-sm)', padding: '0.45rem 0.95rem' }}
+          >
+            <Zap size={14} />
+            <span>Simulate Shock</span>
+          </button>
+        </div>
       </div>
 
-      {/* Top Allocation & Metrics Grid */}
+      {/* KPI Exposure Metric Cards (Modeled after Ref 3 Xero & Ref 4 Cash Balance) */}
       <div
         style={{
           display: 'grid',
-          gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1.4fr)',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+          gap: '1.25rem',
+        }}
+      >
+        <div className="institutional-card scroll-reveal reveal-delay-1" style={{ padding: '1.15rem', borderLeft: '3px solid #2563eb' }}>
+          <div style={{ fontSize: 'var(--text-overline)', lineHeight: 'var(--leading-none)', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: 'var(--tracking-widest)', fontWeight: '700' }}>
+            Total Portfolio Notional
+          </div>
+          <div style={{ fontSize: 'var(--text-display-lg)', lineHeight: 'var(--leading-tight)', letterSpacing: 'var(--tracking-tightest)', fontWeight: '900', fontFamily: 'var(--font-mono)', color: '#ffffff', marginTop: '0.2rem' }}>
+            ${totalNotional.toFixed(1)}M
+          </div>
+          <div style={{ fontSize: 'var(--text-caption)', lineHeight: 'var(--leading-snug)', letterSpacing: 'var(--tracking-normal)', color: '#93c5fd', marginTop: '0.15rem' }}>
+            15 institutional positions
+          </div>
+        </div>
+
+        <div className="institutional-card scroll-reveal reveal-delay-2" style={{ padding: '1.15rem', borderLeft: '3px solid #3b82f6' }}>
+          <div style={{ fontSize: 'var(--text-overline)', lineHeight: 'var(--leading-none)', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: 'var(--tracking-widest)', fontWeight: '700' }}>
+            Fixed Income Allocation
+          </div>
+          <div style={{ fontSize: 'var(--text-display-lg)', lineHeight: 'var(--leading-tight)', letterSpacing: 'var(--tracking-tightest)', fontWeight: '900', fontFamily: 'var(--font-mono)', color: '#bfdbfe', marginTop: '0.2rem' }}>
+            $220.0M
+          </div>
+          <div style={{ fontSize: 'var(--text-caption)', lineHeight: 'var(--leading-snug)', letterSpacing: 'var(--tracking-normal)', color: 'var(--text-secondary)', marginTop: '0.15rem' }}>
+            Govt & corporate duration
+          </div>
+        </div>
+
+        <div className="institutional-card scroll-reveal reveal-delay-3" style={{ padding: '1.15rem', borderLeft: '3px solid #10b981' }}>
+          <div style={{ fontSize: 'var(--text-overline)', lineHeight: 'var(--leading-none)', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: 'var(--tracking-widest)', fontWeight: '700' }}>
+            Corporate & EM Loans
+          </div>
+          <div style={{ fontSize: 'var(--text-display-lg)', lineHeight: 'var(--leading-tight)', letterSpacing: 'var(--tracking-tightest)', fontWeight: '900', fontFamily: 'var(--font-mono)', color: '#6ee7b7', marginTop: '0.2rem' }}>
+            $110.0M
+          </div>
+          <div style={{ fontSize: 'var(--text-caption)', lineHeight: 'var(--leading-snug)', letterSpacing: 'var(--tracking-normal)', color: 'var(--text-secondary)', marginTop: '0.15rem' }}>
+            Subject to spread widening
+          </div>
+        </div>
+
+        <div className="institutional-card scroll-reveal reveal-delay-4" style={{ padding: '1.15rem', borderLeft: '3px solid #0284c7' }}>
+          <div style={{ fontSize: 'var(--text-overline)', lineHeight: 'var(--leading-none)', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: 'var(--tracking-widest)', fontWeight: '700' }}>
+            Derivatives & Equity
+          </div>
+          <div style={{ fontSize: 'var(--text-display-lg)', lineHeight: 'var(--leading-tight)', letterSpacing: 'var(--tracking-tightest)', fontWeight: '900', fontFamily: 'var(--font-mono)', color: '#7dd3fc', marginTop: '0.2rem' }}>
+            $255.0M
+          </div>
+          <div style={{ fontSize: 'var(--text-caption)', lineHeight: 'var(--leading-snug)', letterSpacing: 'var(--tracking-normal)', color: 'var(--text-secondary)', marginTop: '0.15rem' }}>
+            Convexity & beta sensitivity
+          </div>
+        </div>
+      </div>
+
+      {/* Allocation Donut & Sector Concentration */}
+      <div
+        style={{
+          display: 'grid',
+          gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1.35fr)',
           gap: '1.5rem',
         }}
       >
         {/* Allocation Donut Card */}
-        <div className="glass-panel" style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
+        <div className="institutional-card scroll-reveal" style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.75rem', flexWrap: 'wrap', gap: '0.5rem' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <PieIcon size={18} color="#6366f1" />
-              <h3 style={{ fontSize: '0.95rem', fontWeight: '700', color: '#ffffff', margin: 0 }}>
+              <PieIcon size={17} color="#2563eb" />
+              <h3 style={{ fontSize: 'var(--text-h3)', lineHeight: 'var(--leading-snug)', letterSpacing: 'var(--tracking-tight)', fontWeight: '700', color: '#ffffff', margin: 0 }}>
                 Allocation Distribution
               </h3>
             </div>
@@ -126,31 +225,15 @@ export const Portfolio = () => {
             <div style={{ display: 'flex', gap: '0.35rem' }}>
               <button
                 onClick={() => setDonutMode('assetType')}
-                style={{
-                  padding: '0.25rem 0.55rem',
-                  borderRadius: '5px',
-                  fontSize: '0.725rem',
-                  fontWeight: '600',
-                  backgroundColor: donutMode === 'assetType' ? 'rgba(99, 102, 241, 0.25)' : 'transparent',
-                  color: donutMode === 'assetType' ? '#a5b4fc' : 'var(--text-secondary)',
-                  border: donutMode === 'assetType' ? '1px solid rgba(99, 102, 241, 0.5)' : '1px solid transparent',
-                  cursor: 'pointer',
-                }}
+                className={`tab-btn ${donutMode === 'assetType' ? 'active' : ''}`}
+                style={{ padding: '0.25rem 0.6rem', fontSize: 'var(--text-caption)' }}
               >
-                By Asset Class
+                Asset Class
               </button>
               <button
                 onClick={() => setDonutMode('sector')}
-                style={{
-                  padding: '0.25rem 0.55rem',
-                  borderRadius: '5px',
-                  fontSize: '0.725rem',
-                  fontWeight: '600',
-                  backgroundColor: donutMode === 'sector' ? 'rgba(99, 102, 241, 0.25)' : 'transparent',
-                  color: donutMode === 'sector' ? '#a5b4fc' : 'var(--text-secondary)',
-                  border: donutMode === 'sector' ? '1px solid rgba(99, 102, 241, 0.5)' : '1px solid transparent',
-                  cursor: 'pointer',
-                }}
+                className={`tab-btn ${donutMode === 'sector' ? 'active' : ''}`}
+                style={{ padding: '0.25rem 0.6rem', fontSize: 'var(--text-caption)' }}
               >
                 By Sector
               </button>
@@ -163,32 +246,33 @@ export const Portfolio = () => {
           />
         </div>
 
-        {/* Sector Concentration Overview */}
-        <div className="glass-panel" style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+        {/* Sector Concentration Overview (Modeled after Ref 3 Xero Expenses & Ref 2 Klips MRR) */}
+        <div className="institutional-card scroll-reveal" style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <Layers size={18} color="#06b6d4" />
-            <h3 style={{ fontSize: '0.95rem', fontWeight: '700', color: '#ffffff', margin: 0 }}>
-              Sector Concentration & Duration Profile
+            <Layers size={17} color="#0284c7" />
+            <h3 style={{ fontSize: 'var(--text-h3)', lineHeight: 'var(--leading-snug)', letterSpacing: 'var(--tracking-tight)', fontWeight: '700', color: '#ffffff', margin: 0 }}>
+              Sector Concentration & Duration Profiles
             </h3>
           </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', overflowY: 'auto', maxHeight: '240px' }}>
-            {sectorChartData.map(item => {
-              const pct = ((item.value / 585.0) * 100).toFixed(1);
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', overflowY: 'auto', maxHeight: '250px', paddingRight: '0.25rem' }}>
+            {sectorChartData.map((item, index) => {
+              const pct = ((item.value / totalNotional) * 100).toFixed(1);
+              const barColor = SECTOR_BAR_COLORS[index % SECTOR_BAR_COLORS.length];
               return (
                 <div key={item.name} style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.775rem' }}>
-                    <span style={{ color: '#ffffff', fontWeight: '500' }}>{item.name}</span>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 'var(--text-caption)', lineHeight: 'var(--leading-snug)' }}>
+                    <span style={{ color: '#ffffff', fontWeight: '600' }}>{item.name}</span>
                     <span style={{ fontFamily: 'var(--font-mono)', color: 'var(--text-secondary)' }}>
-                      ${item.value.toFixed(1)}M ({pct}%)
+                      ${item.value.toFixed(1)}M <span style={{ color: '#38bdf8', fontWeight: '700' }}>({pct}%)</span>
                     </span>
                   </div>
-                  <div style={{ width: '100%', height: '6px', backgroundColor: 'rgba(255, 255, 255, 0.05)', borderRadius: '3px', overflow: 'hidden' }}>
+                  <div style={{ width: '100%', height: '5px', backgroundColor: '#242731', borderRadius: '3px', overflow: 'hidden' }}>
                     <div
                       style={{
                         width: `${pct}%`,
                         height: '100%',
-                        background: 'linear-gradient(90deg, #6366f1, #06b6d4)',
+                        backgroundColor: barColor,
                         borderRadius: '3px',
                       }}
                     />
@@ -200,108 +284,102 @@ export const Portfolio = () => {
         </div>
       </div>
 
-      {/* Holdings Table with Filter Controls */}
-      <div className="glass-panel" style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+      {/* Holdings Table with Filter Controls (Ref 1 Taskos style) */}
+      <div className="institutional-card scroll-reveal" style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem' }}>
-          {/* Asset Type Filter Tabs */}
+          {/* Asset Type Filter Tabs with Count Pills */}
           <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap' }}>
-            {['ALL', 'BOND', 'LOAN', 'DERIVATIVE', 'EQUITY'].map(type => (
+            {[
+              { type: 'ALL', label: 'All Holdings', count: assets.length },
+              { type: 'BOND', label: 'Bonds', count: assets.filter(a => a.assetType === 'BOND').length },
+              { type: 'LOAN', label: 'Loans', count: assets.filter(a => a.assetType === 'LOAN').length },
+              { type: 'DERIVATIVE', label: 'Derivatives', count: assets.filter(a => a.assetType === 'DERIVATIVE').length },
+              { type: 'EQUITY', label: 'Equities', count: assets.filter(a => a.assetType === 'EQUITY').length },
+            ].map(item => (
               <button
-                key={type}
-                onClick={() => setActiveType(type)}
-                style={{
-                  padding: '0.35rem 0.75rem',
-                  borderRadius: '6px',
-                  fontSize: '0.75rem',
-                  fontWeight: activeType === type ? '600' : '500',
-                  backgroundColor: activeType === type ? 'rgba(99, 102, 241, 0.25)' : 'rgba(255, 255, 255, 0.04)',
-                  color: activeType === type ? '#a5b4fc' : 'var(--text-secondary)',
-                  border: activeType === type ? '1px solid rgba(99, 102, 241, 0.5)' : '1px solid transparent',
-                  cursor: 'pointer',
-                }}
+                key={item.type}
+                onClick={() => setActiveType(item.type)}
+                className={`filter-chip ${activeType === item.type ? 'active' : ''}`}
               >
-                {type}
+                <span>{item.label}</span>
+                <span style={{
+                  padding: '0.1rem 0.35rem',
+                  borderRadius: '3px',
+                  fontSize: 'var(--text-micro)',
+                  lineHeight: 'var(--leading-none)',
+                  letterSpacing: 'var(--tracking-wide)',
+                  fontFamily: 'var(--font-mono)',
+                  backgroundColor: activeType === item.type ? '#1d4ed8' : '#242731',
+                  color: activeType === item.type ? '#ffffff' : 'var(--text-secondary)',
+                }}>
+                  {item.count}
+                </span>
               </button>
             ))}
           </div>
 
           {/* Search Box */}
-          <div style={{ position: 'relative', width: '260px' }}>
-            <Search size={15} color="var(--text-muted)" style={{ position: 'absolute', left: '0.75rem', top: '50%', transform: 'translateY(-50%)' }} />
+          <div style={{ position: 'relative', width: '250px' }}>
+            <Search size={14} color="var(--text-muted)" style={{ position: 'absolute', left: '0.75rem', top: '50%', transform: 'translateY(-50%)' }} />
             <input
               type="text"
               placeholder="Search asset or sector..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="input-control"
-              style={{ paddingLeft: '2.2rem' }}
+              style={{ paddingLeft: '2.1rem' }}
             />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery('')}
+                style={{ position: 'absolute', right: '0.75rem', top: '50%', transform: 'translateY(-50%)', background: 'transparent', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}
+              >
+                <X size={13} />
+              </button>
+            )}
           </div>
         </div>
 
         {/* Holdings Table */}
         <div style={{ overflowX: 'auto' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
+          <table className="fintech-table">
             <thead>
-              <tr style={{ borderBottom: '1px solid var(--border-medium)', textAlign: 'left', color: 'var(--text-muted)' }}>
-                <th style={{ padding: '0.75rem 1rem' }}>#</th>
-                <th style={{ padding: '0.75rem 1rem' }}>Asset Name</th>
-                <th style={{ padding: '0.75rem 1rem' }}>Asset Class</th>
-                <th style={{ padding: '0.75rem 1rem' }}>Sector</th>
-                <th style={{ padding: '0.75rem 1rem', textAlign: 'right' }}>Notional ($M)</th>
-                <th style={{ padding: '0.75rem 1rem', textAlign: 'right' }}>Interest Rate</th>
-                <th style={{ padding: '0.75rem 1rem', textAlign: 'right' }}>Duration (Yrs)</th>
-                <th style={{ padding: '0.75rem 1rem', textAlign: 'center' }}>Currency</th>
+              <tr>
+                <th>#</th>
+                <th>Asset Name</th>
+                <th>Class</th>
+                <th>Sector</th>
+                <th style={{ textAlign: 'right' }}>Notional ($M)</th>
+                <th style={{ textAlign: 'right' }}>Coupon / Rate</th>
+                <th style={{ textAlign: 'right' }}>Duration (Yrs)</th>
+                <th style={{ textAlign: 'center' }}>Currency</th>
               </tr>
             </thead>
             <tbody>
               {filteredAssets.map((asset, index) => (
-                <tr
-                  key={asset.id}
-                  style={{
-                    borderBottom: '1px solid var(--border-subtle)',
-                    backgroundColor: index % 2 === 0 ? 'rgba(255,255,255,0.01)' : 'transparent',
-                  }}
-                >
-                  <td style={{ padding: '0.75rem 1rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
-                    {asset.id}
+                <tr key={asset.id || index}>
+                  <td style={{ color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
+                    #{asset.id}
                   </td>
-                  <td style={{ padding: '0.75rem 1rem', fontWeight: '600', color: '#ffffff' }}>
+                  <td style={{ fontWeight: '700', color: '#ffffff' }}>
                     {asset.assetName}
                   </td>
-                  <td style={{ padding: '0.75rem 1rem' }}>
-                    <span
-                      style={{
-                        padding: '0.15rem 0.45rem',
-                        borderRadius: '4px',
-                        fontSize: '0.7rem',
-                        fontFamily: 'var(--font-mono)',
-                        backgroundColor:
-                          asset.assetType === 'BOND' ? 'rgba(59, 130, 246, 0.15)' :
-                          asset.assetType === 'LOAN' ? 'rgba(16, 185, 129, 0.15)' :
-                          asset.assetType === 'EQUITY' ? 'rgba(245, 158, 11, 0.15)' : 'rgba(168, 85, 247, 0.15)',
-                        color:
-                          asset.assetType === 'BOND' ? '#93c5fd' :
-                          asset.assetType === 'LOAN' ? '#6ee7b7' :
-                          asset.assetType === 'EQUITY' ? '#fde68a' : '#d8b4fe',
-                      }}
-                    >
-                      {asset.assetType}
-                    </span>
+                  <td>
+                    <AssetBadge type={asset.assetType} />
                   </td>
-                  <td style={{ padding: '0.75rem 1rem', color: 'var(--text-secondary)' }}>
+                  <td style={{ color: 'var(--text-secondary)' }}>
                     {asset.sector}
                   </td>
-                  <td style={{ padding: '0.75rem 1rem', textAlign: 'right', fontFamily: 'var(--font-mono)', fontWeight: '700', color: '#ffffff' }}>
+                  <td style={{ textAlign: 'right', fontFamily: 'var(--font-mono)', fontWeight: '800', color: '#ffffff' }}>
                     ${asset.notionalValue.toFixed(1)}M
                   </td>
-                  <td style={{ padding: '0.75rem 1rem', textAlign: 'right', fontFamily: 'var(--font-mono)', color: 'var(--text-secondary)' }}>
-                    {asset.interestRate ? `${asset.interestRate.toFixed(1)}%` : '—'}
+                  <td style={{ textAlign: 'right', fontFamily: 'var(--font-mono)', color: 'var(--text-secondary)' }}>
+                    {asset.interestRate ? `${asset.interestRate.toFixed(2)}%` : '—'}
                   </td>
-                  <td style={{ padding: '0.75rem 1rem', textAlign: 'right', fontFamily: 'var(--font-mono)', color: asset.duration ? '#38bdf8' : 'var(--text-muted)' }}>
-                    {asset.duration ? `${asset.duration.toFixed(1)}` : '—'}
+                  <td style={{ textAlign: 'right', fontFamily: 'var(--font-mono)', fontWeight: '700', color: asset.duration ? '#0284c7' : 'var(--text-muted)' }}>
+                    {asset.duration ? `${asset.duration.toFixed(1)}y` : '—'}
                   </td>
-                  <td style={{ padding: '0.75rem 1rem', textAlign: 'center', fontFamily: 'var(--font-mono)', fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                  <td style={{ textAlign: 'center', fontFamily: 'var(--font-mono)', fontSize: 'var(--text-micro)', lineHeight: 'var(--leading-none)', letterSpacing: 'var(--tracking-wide)', color: '#93c5fd' }}>
                     {asset.currency || 'USD'}
                   </td>
                 </tr>

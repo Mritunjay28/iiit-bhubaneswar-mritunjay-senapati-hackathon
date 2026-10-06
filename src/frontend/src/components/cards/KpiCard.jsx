@@ -7,52 +7,50 @@ export const KpiCard = ({
   change,
   changeType = 'neutral', // 'positive', 'negative', 'neutral'
   icon: Icon,
-  glow = 'indigo',
+  accent = 'blue', // 'blue', 'rose', 'emerald', 'amber', 'cyan'
+  progress = null, // optional 0-100 percentage for Klips/Taskos style progress bar
+  className = '',
 }) => {
-  const glowColors = {
-    indigo: 'rgba(99, 102, 241, 0.15)',
-    rose: 'rgba(239, 68, 68, 0.15)',
-    emerald: 'rgba(16, 185, 129, 0.15)',
-    amber: 'rgba(245, 158, 11, 0.15)',
-    cyan: 'rgba(6, 182, 212, 0.15)',
-  };
-
-  const borderAccent = {
-    indigo: 'rgba(99, 102, 241, 0.3)',
-    rose: 'rgba(239, 68, 68, 0.3)',
-    emerald: 'rgba(16, 185, 129, 0.3)',
-    amber: 'rgba(245, 158, 11, 0.3)',
-    cyan: 'rgba(6, 182, 212, 0.3)',
+  const accentColors = {
+    blue: '#2563eb',
+    rose: '#ef4444',
+    emerald: '#10b981',
+    amber: '#f59e0b',
+    cyan: '#0284c7',
   };
 
   const changeColors = {
     positive: '#10b981',
     negative: '#ef4444',
-    neutral: '#94a3b8',
+    neutral: '#9ca3af',
   };
+
+  const activeAccent = accentColors[accent] || accentColors.blue;
 
   return (
     <div
-      className="glass-panel"
+      className={`institutional-card ${className}`}
       style={{
-        padding: '1.25rem 1.4rem',
+        padding: '1.25rem 1.35rem',
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'space-between',
         position: 'relative',
-        overflow: 'hidden',
-        border: `1px solid ${borderAccent[glow] || borderAccent.indigo}`,
-        background: `radial-gradient(circle at top right, ${glowColors[glow] || glowColors.indigo} 0%, var(--bg-card) 70%)`,
+        background: 'var(--bg-card)',
+        border: '1px solid var(--border-subtle)',
       }}
     >
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.75rem' }}>
+      {/* Top Header Row */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.65rem' }}>
         <span
           style={{
-            fontSize: '0.8rem',
-            fontWeight: '600',
+            fontSize: 'var(--text-overline)',
+            fontWeight: '700',
             textTransform: 'uppercase',
-            letterSpacing: '0.06em',
-            color: 'var(--text-secondary)',
+            letterSpacing: 'var(--tracking-wider)',
+            lineHeight: 'var(--leading-none)',
+            color: 'var(--text-muted)',
+            fontFamily: 'var(--font-sans)',
           }}
         >
           {title}
@@ -60,60 +58,77 @@ export const KpiCard = ({
         {Icon && (
           <div
             style={{
-              padding: '0.45rem',
-              borderRadius: '8px',
-              backgroundColor: 'rgba(255, 255, 255, 0.05)',
+              width: '28px',
+              height: '28px',
+              borderRadius: '4px',
+              backgroundColor: '#131418',
+              border: '1px solid var(--border-subtle)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              color: 'var(--text-primary)',
+              color: activeAccent,
             }}
           >
-            <Icon size={18} />
+            <Icon size={15} />
           </div>
         )}
       </div>
 
-      <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.75rem', marginBottom: '0.35rem' }}>
-        <span
+      {/* Primary Value Readout */}
+      <div
+        style={{
+          fontSize: 'var(--text-display-xl)',
+          fontWeight: '800',
+          fontFamily: 'var(--font-mono)',
+          color: 'var(--text-primary)',
+          letterSpacing: 'var(--tracking-tightest)',
+          lineHeight: 'var(--leading-tight)',
+        }}
+      >
+        {value}
+      </div>
+
+      {/* Progress Underline (Inspired by Reference 1 Taskos & Reference 2 Klips) */}
+      <div
+        style={{
+          width: '100%',
+          height: '4px',
+          backgroundColor: '#242731',
+          borderRadius: '2px',
+          margin: '0.85rem 0 0.65rem 0',
+          overflow: 'hidden',
+        }}
+      >
+        <div
           style={{
-            fontSize: '1.85rem',
-            fontWeight: '700',
-            fontFamily: 'var(--font-mono)',
-            color: '#ffffff',
-            letterSpacing: '-0.02em',
+            width: progress !== null ? `${Math.min(100, Math.max(8, progress))}%` : '45%',
+            height: '100%',
+            backgroundColor: activeAccent,
+            borderRadius: '2px',
           }}
-        >
-          {value}
+        />
+      </div>
+
+      {/* Sub-label and Comparison Trend */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: 'var(--text-caption)', lineHeight: 'var(--leading-normal)', letterSpacing: 'var(--tracking-normal)' }}>
+        <span style={{ color: 'var(--text-secondary)' }}>
+          {subtitle}
         </span>
         {change && (
           <span
             style={{
-              fontSize: '0.775rem',
-              fontWeight: '700',
               fontFamily: 'var(--font-mono)',
+              fontSize: 'var(--text-caption)',
+              lineHeight: 'var(--leading-none)',
+              letterSpacing: 'var(--tracking-normal)',
+              fontWeight: '700',
               color: changeColors[changeType] || changeColors.neutral,
-              padding: '0.15rem 0.4rem',
-              borderRadius: '4px',
-              backgroundColor: `${changeColors[changeType]}18`,
             }}
           >
             {change}
           </span>
         )}
       </div>
-
-      {subtitle && (
-        <span
-          style={{
-            fontSize: '0.775rem',
-            color: 'var(--text-muted)',
-            lineHeight: 1.4,
-          }}
-        >
-          {subtitle}
-        </span>
-      )}
     </div>
   );
 };

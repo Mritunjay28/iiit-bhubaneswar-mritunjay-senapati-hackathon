@@ -4,12 +4,15 @@ import {
   BarChart2,
   Table,
   Layers,
+  RotateCcw,
+  Sliders,
+  Activity,
 } from 'lucide-react';
 import { RiskEngineApi } from '../services/api';
 import { WaterfallChart } from '../components/charts/WaterfallChart';
 import { AssetImpactBar } from '../components/charts/AssetImpactBar';
 import { Loader, Spinner } from '../components/common/Loader';
-import { EventBadge } from '../components/common/Badge';
+import { EventBadge, AssetBadge } from '../components/common/Badge';
 
 export const StressTest = () => {
   const [loading, setLoading] = useState(true);
@@ -41,8 +44,7 @@ export const StressTest = () => {
     init();
   }, []);
 
-  const handleScenarioChange = (e) => {
-    const eventType = e.target.value;
+  const applyScenarioPreset = (eventType) => {
     setSelectedScenario(eventType);
     const scen = scenarios.find(s => s.eventType === eventType);
     if (scen) {
@@ -54,6 +56,10 @@ export const StressTest = () => {
         commodityShock: scen.commodityShock,
       });
     }
+  };
+
+  const handleScenarioChange = (e) => {
+    applyScenarioPreset(e.target.value);
   };
 
   const handleRunTest = async () => {
@@ -70,77 +76,130 @@ export const StressTest = () => {
     }
   };
 
+  const handleResetToPreset = () => {
+    applyScenarioPreset(selectedScenario);
+  };
+
   if (loading) {
-    return <Loader message="Loading shock scenarios and initializing stress testing engine..." />;
+    return <Loader message="Initializing quantitative risk engine and loading historical stress scenarios..." />;
   }
 
   const isLoss = (result?.totalPnlImpact || 0) < 0;
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.75rem' }}>
-      {/* Top Configuration & Control Section */}
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+      {/* Top Header & Overview */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem' }}>
+        <div>
+          <h2 style={{ fontSize: 'var(--text-h1)', lineHeight: 'var(--leading-snug)', letterSpacing: 'var(--tracking-tighter)', fontWeight: '800', color: '#ffffff', margin: 0, display: 'flex', alignItems: 'center', gap: '0.5rem', fontFamily: 'var(--font-display)' }}>
+            <span style={{
+              width: '26px',
+              height: '26px',
+              borderRadius: '4px',
+              backgroundColor: '#2563eb',
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}>
+              <Zap size={15} color="#ffffff" />
+            </span>
+            Module B: Strategic Portfolio Stress Engine
+          </h2>
+          <p style={{ fontSize: 'var(--text-caption)', lineHeight: 'var(--leading-relaxed)', letterSpacing: 'var(--tracking-normal)', color: 'var(--text-secondary)', margin: '0.2rem 0 0 0' }}>
+            Multi-factor macroeconomic shock simulation, parametric VaR, and delta-normal asset valuation
+          </p>
+        </div>
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+          <button
+            onClick={handleResetToPreset}
+            className="btn btn-outline"
+            title="Reset shock factor sliders to preset baseline"
+            style={{ padding: '0.5rem 0.85rem', fontSize: 'var(--text-body-sm)' }}
+          >
+            <RotateCcw size={14} />
+            <span>Reset Sliders</span>
+          </button>
+
+          {/* The ONE Repeated CTA */}
+          <button
+            onClick={handleRunTest}
+            disabled={executing}
+            className="btn btn-cta"
+            style={{ minWidth: '175px' }}
+          >
+            {executing ? <Spinner size={14} color="#ffffff" /> : <Zap size={15} />}
+            <span>{executing ? 'Simulating...' : 'Simulate Shock'}</span>
+          </button>
+        </div>
+      </div>
+
+      {/* Preset Scenario Selector Bar */}
       <div
-        className="glass-panel"
+        className="institutional-card scroll-reveal"
         style={{
-          padding: '1.5rem',
+          padding: '1.25rem 1.5rem',
           display: 'flex',
           flexDirection: 'column',
-          gap: '1.25rem',
+          gap: '1rem',
+          borderLeft: '4px solid #2563eb',
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.75rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
-            <div
-              style={{
-                width: '32px',
-                height: '32px',
-                borderRadius: '8px',
-                backgroundColor: 'rgba(99, 102, 241, 0.2)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: '#6366f1',
-              }}
-            >
-              <Zap size={18} />
-            </div>
-            <div>
-              <h2 style={{ fontSize: '1.1rem', fontWeight: '700', color: '#ffffff', margin: 0 }}>
-                Strategic Shock Scenario Configurator
-              </h2>
-              <p style={{ fontSize: '0.775rem', color: 'var(--text-secondary)', margin: '0.15rem 0 0 0' }}>
-                Select a predefined hackathon shock event or tune risk factor sensitivities
-              </p>
-            </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <Sliders size={16} color="#3b82f6" />
+            <span style={{ fontSize: 'var(--text-body-sm)', lineHeight: 'var(--leading-snug)', letterSpacing: 'var(--tracking-tight)', fontWeight: '700', color: '#ffffff' }}>
+              Select Shock Scenario Blueprint:
+            </span>
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-            <select
-              value={selectedScenario}
-              onChange={handleScenarioChange}
-              className="input-control"
-              style={{ width: '240px', fontWeight: '600' }}
-            >
-              {scenarios.map(s => (
-                <option key={s.eventType} value={s.eventType}>
-                  {s.scenarioName} ({s.eventType})
-                </option>
-              ))}
-            </select>
-
-            <button
-              onClick={handleRunTest}
-              disabled={executing}
-              className="btn btn-primary"
-              style={{ minWidth: '170px' }}
-            >
-              {executing ? <Spinner size={15} color="#ffffff" /> : <Zap size={16} />}
-              <span>{executing ? 'Executing Shock...' : 'Execute Stress Test'}</span>
-            </button>
-          </div>
+          <select
+            value={selectedScenario}
+            onChange={handleScenarioChange}
+            className="input-control"
+            style={{ width: '260px', fontWeight: '600' }}
+          >
+            {scenarios.map(s => (
+              <option key={s.eventType} value={s.eventType}>
+                {s.scenarioName} ({s.eventType})
+              </option>
+            ))}
+          </select>
         </div>
 
-        {/* Shock Factor Controls Grid */}
+        {/* Quick Scenario Preset Chips */}
+        <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+          {scenarios.map(scen => {
+            const isSelected = selectedScenario === scen.eventType;
+            return (
+              <button
+                key={scen.eventType}
+                onClick={() => applyScenarioPreset(scen.eventType)}
+                className={`filter-chip ${isSelected ? 'active' : ''}`}
+                style={{
+                  padding: '0.35rem 0.75rem',
+                  fontSize: 'var(--text-caption)',
+                }}
+              >
+                <span>{scen.scenarioName}</span>
+                <span style={{
+                  padding: '0.1rem 0.35rem',
+                  borderRadius: '3px',
+                  fontSize: 'var(--text-micro)',
+                  lineHeight: 'var(--leading-none)',
+                  letterSpacing: 'var(--tracking-wide)',
+                  fontFamily: 'var(--font-mono)',
+                  backgroundColor: isSelected ? '#1d4ed8' : '#242731',
+                  color: isSelected ? '#ffffff' : 'var(--text-secondary)',
+                }}>
+                  {scen.eventType}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* 5-Factor Shock Sensitivity Sliders */}
         <div
           style={{
             display: 'grid',
@@ -150,50 +209,36 @@ export const StressTest = () => {
             borderTop: '1px solid var(--border-subtle)',
           }}
         >
-          {/* Equity Shock */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
-              <span>Equity Shock</span>
-              <span style={{ fontFamily: 'var(--font-mono)', fontWeight: '700', color: '#f87171' }}>
+          {/* 1. Equity Shock */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem', padding: '0.65rem', backgroundColor: '#131418', borderRadius: '6px', border: '1px solid var(--border-subtle)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span style={{ fontSize: 'var(--text-overline)', lineHeight: 'var(--leading-none)', letterSpacing: 'var(--tracking-widest)', fontWeight: '700', color: 'var(--text-secondary)', textTransform: 'uppercase' }}>Equity Shock</span>
+              <span style={{ fontFamily: 'var(--font-mono)', fontWeight: '800', color: '#ef4444', fontSize: 'var(--text-body-sm)', lineHeight: 'var(--leading-tight)' }}>
                 {(customShocks.equityShock * 100).toFixed(1)}%
               </span>
             </div>
             <input
               type="range"
-              min="-30"
+              min="-35"
               max="15"
               step="1"
               value={Math.round(customShocks.equityShock * 100)}
               onChange={(e) => setCustomShocks({ ...customShocks, equityShock: parseFloat(e.target.value) / 100 })}
-              style={{ accentColor: '#ef4444', width: '100%', cursor: 'pointer' }}
+              className="range-rose"
+              style={{ cursor: 'pointer' }}
             />
-          </div>
-
-          {/* Interest Rate Shock */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
-              <span>Interest Rate Δ</span>
-              <span style={{ fontFamily: 'var(--font-mono)', fontWeight: '700', color: '#38bdf8' }}>
-                +{(customShocks.interestRateShock * 10000).toFixed(0)} bps
-              </span>
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 'var(--text-micro)', lineHeight: 'var(--leading-none)', letterSpacing: 'var(--tracking-wide)', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
+              <span>-35% Crash</span>
+              <span>+15% Rally</span>
             </div>
-            <input
-              type="range"
-              min="0"
-              max="350"
-              step="25"
-              value={Math.round(customShocks.interestRateShock * 10000)}
-              onChange={(e) => setCustomShocks({ ...customShocks, interestRateShock: parseFloat(e.target.value) / 10000 })}
-              style={{ accentColor: '#06b6d4', width: '100%', cursor: 'pointer' }}
-            />
           </div>
 
-          {/* Credit Spread Shock */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
-              <span>Credit Spread Δ</span>
-              <span style={{ fontFamily: 'var(--font-mono)', fontWeight: '700', color: '#fb923c' }}>
-                +{customShocks.creditSpreadShock.toFixed(0)} bps
+          {/* 2. Interest Rate Shock */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem', padding: '0.65rem', backgroundColor: '#131418', borderRadius: '6px', border: '1px solid var(--border-subtle)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span style={{ fontSize: 'var(--text-overline)', lineHeight: 'var(--leading-none)', letterSpacing: 'var(--tracking-widest)', fontWeight: '700', color: 'var(--text-secondary)', textTransform: 'uppercase' }}>Interest Rate Δ</span>
+              <span style={{ fontFamily: 'var(--font-mono)', fontWeight: '800', color: '#0284c7', fontSize: 'var(--text-body-sm)', lineHeight: 'var(--leading-tight)' }}>
+                +{(customShocks.interestRateShock * 10000).toFixed(0)} bps
               </span>
             </div>
             <input
@@ -201,223 +246,259 @@ export const StressTest = () => {
               min="0"
               max="400"
               step="25"
-              value={customShocks.creditSpreadShock}
-              onChange={(e) => setCustomShocks({ ...customShocks, creditSpreadShock: parseFloat(e.target.value) })}
-              style={{ accentColor: '#f97316', width: '100%', cursor: 'pointer' }}
+              value={Math.round(customShocks.interestRateShock * 10000)}
+              onChange={(e) => setCustomShocks({ ...customShocks, interestRateShock: parseFloat(e.target.value) / 10000 })}
+              className="range-cyan"
+              style={{ cursor: 'pointer' }}
             />
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 'var(--text-micro)', lineHeight: 'var(--leading-none)', letterSpacing: 'var(--tracking-wide)', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
+              <span>0 bps (Flat)</span>
+              <span>+400 bps (Hike)</span>
+            </div>
           </div>
 
-          {/* Commodity Shock */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
-              <span>Commodity Shock</span>
-              <span style={{ fontFamily: 'var(--font-mono)', fontWeight: '700', color: customShocks.commodityShock >= 0 ? '#34d399' : '#f87171' }}>
+          {/* 3. Credit Spread Shock */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem', padding: '0.65rem', backgroundColor: '#131418', borderRadius: '6px', border: '1px solid var(--border-subtle)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span style={{ fontSize: 'var(--text-overline)', lineHeight: 'var(--leading-none)', letterSpacing: 'var(--tracking-widest)', fontWeight: '700', color: 'var(--text-secondary)', textTransform: 'uppercase' }}>Credit Spreads</span>
+              <span style={{ fontFamily: 'var(--font-mono)', fontWeight: '800', color: '#f59e0b', fontSize: 'var(--text-body-sm)', lineHeight: 'var(--leading-tight)' }}>
+                +{customShocks.creditSpreadShock.toFixed(0)} bps
+              </span>
+            </div>
+            <input
+              type="range"
+              min="0"
+              max="450"
+              step="25"
+              value={customShocks.creditSpreadShock}
+              onChange={(e) => setCustomShocks({ ...customShocks, creditSpreadShock: parseFloat(e.target.value) })}
+              className="range-amber"
+              style={{ cursor: 'pointer' }}
+            />
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 'var(--text-micro)', lineHeight: 'var(--leading-none)', letterSpacing: 'var(--tracking-wide)', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
+              <span>0 bps</span>
+              <span>+450 bps High-Yield</span>
+            </div>
+          </div>
+
+          {/* 4. FX Shock */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem', padding: '0.65rem', backgroundColor: '#131418', borderRadius: '6px', border: '1px solid var(--border-subtle)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span style={{ fontSize: 'var(--text-overline)', lineHeight: 'var(--leading-none)', letterSpacing: 'var(--tracking-widest)', fontWeight: '700', color: 'var(--text-secondary)', textTransform: 'uppercase' }}>FX Devaluation</span>
+              <span style={{ fontFamily: 'var(--font-mono)', fontWeight: '800', color: '#38bdf8', fontSize: 'var(--text-body-sm)', lineHeight: 'var(--leading-tight)' }}>
+                {(customShocks.fxShock * 100).toFixed(1)}%
+              </span>
+            </div>
+            <input
+              type="range"
+              min="-20"
+              max="15"
+              step="2.5"
+              value={Math.round(customShocks.fxShock * 100)}
+              onChange={(e) => setCustomShocks({ ...customShocks, fxShock: parseFloat(e.target.value) / 100 })}
+              className="range-cyan"
+              style={{ cursor: 'pointer' }}
+            />
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 'var(--text-micro)', lineHeight: 'var(--leading-none)', letterSpacing: 'var(--tracking-wide)', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
+              <span>-20% Devaluation</span>
+              <span>+15% FX Boost</span>
+            </div>
+          </div>
+
+          {/* 5. Commodity Shock */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem', padding: '0.65rem', backgroundColor: '#131418', borderRadius: '6px', border: '1px solid var(--border-subtle)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span style={{ fontSize: 'var(--text-overline)', lineHeight: 'var(--leading-none)', letterSpacing: 'var(--tracking-widest)', fontWeight: '700', color: 'var(--text-secondary)', textTransform: 'uppercase' }}>Commodity Shock</span>
+              <span style={{ fontFamily: 'var(--font-mono)', fontWeight: '800', color: customShocks.commodityShock >= 0 ? '#10b981' : '#ef4444', fontSize: 'var(--text-body-sm)', lineHeight: 'var(--leading-tight)' }}>
                 {customShocks.commodityShock >= 0 ? '+' : ''}{(customShocks.commodityShock * 100).toFixed(1)}%
               </span>
             </div>
             <input
               type="range"
               min="-25"
-              max="35"
+              max="40"
               step="5"
               value={Math.round(customShocks.commodityShock * 100)}
               onChange={(e) => setCustomShocks({ ...customShocks, commodityShock: parseFloat(e.target.value) / 100 })}
-              style={{ accentColor: '#10b981', width: '100%', cursor: 'pointer' }}
+              className="range-emerald"
+              style={{ cursor: 'pointer' }}
             />
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 'var(--text-micro)', lineHeight: 'var(--leading-none)', letterSpacing: 'var(--tracking-wide)', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
+              <span>-25% Deflation</span>
+              <span>+40% Oil Spike</span>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Stress Test Executive Output Banner */}
+      {/* Stress Test Executive Output Banner (Modeled after Reference 2 Klips & Ref 4 Cash Balance) */}
       {result && (
         <div
-          className="glass-panel"
+          className="institutional-card scroll-reveal"
           style={{
-            padding: '1.5rem',
-            background: 'linear-gradient(135deg, rgba(20, 30, 51, 0.9) 0%, rgba(15, 23, 42, 0.95) 100%)',
-            border: '1px solid rgba(99, 102, 241, 0.3)',
+            padding: '1.35rem 1.5rem',
+            backgroundColor: '#16181f',
+            border: isLoss ? '1px solid rgba(239, 68, 68, 0.4)' : '1px solid rgba(16, 185, 129, 0.4)',
+            borderLeft: isLoss ? '4px solid #ef4444' : '4px solid #10b981',
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
             gap: '1.25rem',
           }}
         >
+          {/* Card 1: Scenario Meta */}
           <div>
-            <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+            <div style={{ fontSize: 'var(--text-overline)', lineHeight: 'var(--leading-none)', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: 'var(--tracking-widest)', fontWeight: '700' }}>
               Simulated Scenario
             </div>
-            <div style={{ fontSize: '1.25rem', fontWeight: '700', color: '#ffffff', marginTop: '0.25rem' }}>
+            <div style={{ fontSize: 'var(--text-h2)', lineHeight: 'var(--leading-snug)', letterSpacing: 'var(--tracking-tighter)', fontWeight: '800', color: '#ffffff', marginTop: '0.25rem', fontFamily: 'var(--font-display)' }}>
               {result.scenarioName}
             </div>
-            <div style={{ marginTop: '0.35rem' }}>
+            <div style={{ marginTop: '0.35rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
               <EventBadge type={result.eventType} />
+              <span style={{ fontSize: 'var(--text-micro)', lineHeight: 'var(--leading-none)', letterSpacing: 'var(--tracking-wide)', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
+                {result.assetDetails?.length || 15} Assets
+              </span>
             </div>
           </div>
 
+          {/* Card 2: Total Loss / Gain (Ref 2 Klips style bold metric) */}
           <div>
-            <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-              Total Portfolio Loss
+            <div style={{ fontSize: 'var(--text-overline)', lineHeight: 'var(--leading-none)', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: 'var(--tracking-widest)', fontWeight: '700' }}>
+              Total Portfolio Impact
             </div>
             <div
               style={{
-                fontSize: '1.55rem',
-                fontWeight: '800',
+                fontSize: 'var(--text-display-lg)',
+                lineHeight: 'var(--leading-tight)',
+                letterSpacing: 'var(--tracking-tightest)',
+                fontWeight: '900',
                 fontFamily: 'var(--font-mono)',
                 color: isLoss ? '#ef4444' : '#10b981',
-                marginTop: '0.2rem',
+                marginTop: '0.15rem',
               }}
             >
               {isLoss ? '-' : '+'}${Math.abs(result.totalPnlImpact).toFixed(2)}M
             </div>
-            <div style={{ fontSize: '0.775rem', fontFamily: 'var(--font-mono)', color: isLoss ? '#f87171' : '#34d399' }}>
-              {result.percentageChange >= 0 ? '+' : ''}{result.percentageChange.toFixed(2)}% of Notional
+            <div style={{ fontSize: 'var(--text-caption)', lineHeight: 'var(--leading-snug)', letterSpacing: 'var(--tracking-tight)', fontFamily: 'var(--font-mono)', fontWeight: '700', color: isLoss ? '#f87171' : '#34d399' }}>
+              {result.percentageChange >= 0 ? '+' : ''}{result.percentageChange.toFixed(2)}% Drawdown
             </div>
           </div>
 
+          {/* Card 3: Portfolio Valuation Transition */}
           <div>
-            <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-              Portfolio Value Impact
+            <div style={{ fontSize: 'var(--text-overline)', lineHeight: 'var(--leading-none)', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: 'var(--tracking-widest)', fontWeight: '700' }}>
+              Valuation Transition
             </div>
             <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.5rem', marginTop: '0.25rem' }}>
-              <span style={{ fontSize: '1.1rem', fontFamily: 'var(--font-mono)', color: 'var(--text-secondary)', textDecoration: 'line-through' }}>
+              <span style={{ fontSize: 'var(--text-body-sm)', lineHeight: 'var(--leading-tight)', letterSpacing: 'var(--tracking-tight)', fontFamily: 'var(--font-mono)', color: 'var(--text-secondary)', textDecoration: 'line-through' }}>
                 ${result.portfolioValueBefore.toFixed(1)}M
               </span>
-              <span style={{ fontSize: '1.35rem', fontFamily: 'var(--font-mono)', fontWeight: '700', color: '#38bdf8' }}>
+              <span style={{ fontSize: 'var(--text-display-md)', lineHeight: 'var(--leading-tight)', letterSpacing: 'var(--tracking-tightest)', fontFamily: 'var(--font-mono)', fontWeight: '800', color: '#38bdf8' }}>
                 → ${result.portfolioValueAfter.toFixed(1)}M
               </span>
             </div>
-            <div style={{ fontSize: '0.725rem', color: 'var(--text-muted)' }}>
-              15 assets stressed
+            <div style={{ fontSize: 'var(--text-micro)', lineHeight: 'var(--leading-none)', letterSpacing: 'var(--tracking-wide)', color: 'var(--text-muted)', marginTop: '0.2rem' }}>
+              Delta-normal factor model
             </div>
           </div>
 
+          {/* Card 4: Worst Hit Asset */}
           <div>
-            <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-              Worst Hit Asset
+            <div style={{ fontSize: 'var(--text-overline)', lineHeight: 'var(--leading-none)', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: 'var(--tracking-widest)', fontWeight: '700' }}>
+              Primary Vulnerability
             </div>
-            <div style={{ fontSize: '1.05rem', fontWeight: '700', color: '#ffffff', marginTop: '0.25rem' }}>
+            <div style={{ fontSize: 'var(--text-h3)', lineHeight: 'var(--leading-snug)', letterSpacing: 'var(--tracking-tight)', fontWeight: '800', color: '#ffffff', marginTop: '0.25rem' }}>
               {result.worstHitAsset || 'US Treasury 10Y'}
             </div>
-            <div style={{ fontSize: '0.775rem', fontFamily: 'var(--font-mono)', color: '#f87171' }}>
-              -${Math.abs(result.worstHitAssetPnl || 18.5).toFixed(2)}M PnL
+            <div style={{ fontSize: 'var(--text-caption)', lineHeight: 'var(--leading-snug)', letterSpacing: 'var(--tracking-tight)', fontFamily: 'var(--font-mono)', fontWeight: '700', color: '#ef4444', marginTop: '0.15rem' }}>
+              -${Math.abs(result.worstHitAssetPnl || 18.5).toFixed(2)}M PnL Loss
             </div>
           </div>
 
+          {/* Card 5: Parametric VaR */}
           <div>
-            <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-              Parametric VaR (95% / 99%)
+            <div style={{ fontSize: 'var(--text-overline)', lineHeight: 'var(--leading-none)', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: 'var(--tracking-widest)', fontWeight: '700' }}>
+              Parametric VaR (1-Day)
             </div>
-            <div style={{ fontSize: '1.15rem', fontFamily: 'var(--font-mono)', fontWeight: '700', color: '#fb923c', marginTop: '0.25rem' }}>
-              ${(result.valueAtRisk95 || 37.2).toFixed(1)}M / ${(result.valueAtRisk99 || 54.7).toFixed(1)}M
+            <div style={{ fontSize: 'var(--text-display-md)', lineHeight: 'var(--leading-tight)', letterSpacing: 'var(--tracking-tightest)', fontFamily: 'var(--font-mono)', fontWeight: '800', color: '#f59e0b', marginTop: '0.25rem' }}>
+              ${(result.valueAtRisk95 || 37.2).toFixed(1)}M <span style={{ fontSize: 'var(--text-caption)', color: 'var(--text-muted)' }}>/ 95%</span>
             </div>
-            <div style={{ fontSize: '0.725rem', color: 'var(--text-muted)' }}>
-              1-day horizon loss
+            <div style={{ fontSize: 'var(--text-caption)', lineHeight: 'var(--leading-snug)', letterSpacing: 'var(--tracking-tight)', fontFamily: 'var(--font-mono)', color: '#fb923c' }}>
+              ${(result.valueAtRisk99 || 54.7).toFixed(1)}M at 99%
             </div>
           </div>
         </div>
       )}
 
       {/* Visualizations & Data Exploration Panel */}
-      <div className="glass-panel" style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+      <div className="institutional-card scroll-reveal" style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
         {/* Navigation Tabs */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid var(--border-subtle)', paddingBottom: '0.75rem' }}>
-          <div style={{ display: 'flex', gap: '0.75rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid var(--border-subtle)', paddingBottom: '0.75rem', flexWrap: 'wrap', gap: '0.75rem' }}>
+          <div style={{ display: 'flex', gap: '0.4rem' }}>
             <button
               onClick={() => setActiveTab('waterfall')}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.5rem',
-                padding: '0.5rem 0.85rem',
-                borderRadius: '6px',
-                fontSize: '0.825rem',
-                fontWeight: activeTab === 'waterfall' ? '600' : '500',
-                backgroundColor: activeTab === 'waterfall' ? 'rgba(99, 102, 241, 0.2)' : 'transparent',
-                color: activeTab === 'waterfall' ? '#ffffff' : 'var(--text-secondary)',
-                border: activeTab === 'waterfall' ? '1px solid rgba(99, 102, 241, 0.4)' : '1px solid transparent',
-                cursor: 'pointer',
-              }}
+              className={`tab-btn ${activeTab === 'waterfall' ? 'active' : ''}`}
             >
-              <BarChart2 size={16} />
+              <BarChart2 size={15} />
               <span>PnL Waterfall Attribution</span>
             </button>
 
             <button
               onClick={() => setActiveTab('bars')}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.5rem',
-                padding: '0.5rem 0.85rem',
-                borderRadius: '6px',
-                fontSize: '0.825rem',
-                fontWeight: activeTab === 'bars' ? '600' : '500',
-                backgroundColor: activeTab === 'bars' ? 'rgba(99, 102, 241, 0.2)' : 'transparent',
-                color: activeTab === 'bars' ? '#ffffff' : 'var(--text-secondary)',
-                border: activeTab === 'bars' ? '1px solid rgba(99, 102, 241, 0.4)' : '1px solid transparent',
-                cursor: 'pointer',
-              }}
+              className={`tab-btn ${activeTab === 'bars' ? 'active' : ''}`}
             >
-              <Layers size={16} />
-              <span>Asset Shock Comparison</span>
+              <Layers size={15} />
+              <span>Asset Valuation Deltas</span>
             </button>
 
             <button
               onClick={() => setActiveTab('table')}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.5rem',
-                padding: '0.5rem 0.85rem',
-                borderRadius: '6px',
-                fontSize: '0.825rem',
-                fontWeight: activeTab === 'table' ? '600' : '500',
-                backgroundColor: activeTab === 'table' ? 'rgba(99, 102, 241, 0.2)' : 'transparent',
-                color: activeTab === 'table' ? '#ffffff' : 'var(--text-secondary)',
-                border: activeTab === 'table' ? '1px solid rgba(99, 102, 241, 0.4)' : '1px solid transparent',
-                cursor: 'pointer',
-              }}
+              className={`tab-btn ${activeTab === 'table' ? 'active' : ''}`}
             >
-              <Table size={16} />
-              <span>Asset Level Breakdown Table ({result?.assetDetails?.length || 15})</span>
+              <Table size={15} />
+              <span>Asset Breakdown Table ({result?.assetDetails?.length || 15})</span>
             </button>
           </div>
 
-          <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
+          <span style={{ fontSize: 'var(--text-micro)', lineHeight: 'var(--leading-none)', letterSpacing: 'var(--tracking-wide)', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+            <Activity size={13} color="#2563eb" />
             Executed: {result?.executedAt ? new Date(result.executedAt).toLocaleTimeString() : 'Live'}
           </span>
         </div>
 
-        {/* Tab Content Display */}
+        {/* Tab 1: PnL Waterfall */}
         {activeTab === 'waterfall' && (
           <div>
-            <div style={{ marginBottom: '0.75rem', fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
-              Flow shows baseline notional ($585.0M) eroded by bond duration shifts, credit spread widenings, equity beta draws, and derivative revaluations.
+            <div style={{ marginBottom: '0.75rem', fontSize: 'var(--text-caption)', lineHeight: 'var(--leading-relaxed)', letterSpacing: 'var(--tracking-normal)', color: 'var(--text-secondary)' }}>
+              Decomposition of total portfolio loss across fixed income bond durations, loan spread widenings, equity draws, and derivatives.
             </div>
             <WaterfallChart result={result} />
           </div>
         )}
 
+        {/* Tab 2: Asset Level Comparison Bars */}
         {activeTab === 'bars' && (
           <div>
-            <div style={{ marginBottom: '0.75rem', fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
-              Before vs. After valuation across key portfolio holdings under the {result?.scenarioName}.
+            <div style={{ marginBottom: '0.75rem', fontSize: 'var(--text-caption)', lineHeight: 'var(--leading-relaxed)', letterSpacing: 'var(--tracking-normal)', color: 'var(--text-secondary)' }}>
+              Pre-shock baseline notional vs. post-shock stressed valuation across all 15 portfolio holdings.
             </div>
             <AssetImpactBar assetDetails={result?.assetDetails} />
           </div>
         )}
 
+        {/* Tab 3: Detailed Asset Breakdown Table (Ref 1 Taskos / Ref 2 Klips style) */}
         {activeTab === 'table' && (
           <div style={{ overflowX: 'auto' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.825rem' }}>
+            <table className="fintech-table">
               <thead>
-                <tr style={{ borderBottom: '1px solid var(--border-medium)', textAlign: 'left', color: 'var(--text-muted)' }}>
-                  <th style={{ padding: '0.75rem 1rem' }}>Asset Name</th>
-                  <th style={{ padding: '0.75rem 1rem' }}>Class</th>
-                  <th style={{ padding: '0.75rem 1rem' }}>Sector</th>
-                  <th style={{ padding: '0.75rem 1rem', textAlign: 'right' }}>Before ($M)</th>
-                  <th style={{ padding: '0.75rem 1rem', textAlign: 'right' }}>Shock %</th>
-                  <th style={{ padding: '0.75rem 1rem', textAlign: 'right' }}>After ($M)</th>
-                  <th style={{ padding: '0.75rem 1rem', textAlign: 'right' }}>Net PnL ($M)</th>
+                <tr>
+                  <th>Asset Name</th>
+                  <th>Class</th>
+                  <th>Sector</th>
+                  <th style={{ textAlign: 'right' }}>Before ($M)</th>
+                  <th style={{ textAlign: 'right' }}>Shock Delta</th>
+                  <th style={{ textAlign: 'right' }}>After ($M)</th>
+                  <th style={{ textAlign: 'right' }}>Net PnL ($M)</th>
                 </tr>
               </thead>
               <tbody>
@@ -426,53 +507,38 @@ export const StressTest = () => {
                   return (
                     <tr
                       key={asset.assetId || idx}
-                      style={{
-                        borderBottom: '1px solid var(--border-subtle)',
-                        backgroundColor: idx % 2 === 0 ? 'rgba(255,255,255,0.01)' : 'transparent',
-                      }}
+                      className={loss && Math.abs(asset.pnlImpact) > 5 ? 'high-impact-row' : ''}
                     >
-                      <td style={{ padding: '0.75rem 1rem', fontWeight: '600', color: '#ffffff' }}>
+                      <td style={{ fontWeight: '700', color: '#ffffff' }}>
                         {asset.assetName}
                       </td>
-                      <td style={{ padding: '0.75rem 1rem' }}>
-                        <span
-                          style={{
-                            padding: '0.15rem 0.4rem',
-                            borderRadius: '4px',
-                            fontSize: '0.7rem',
-                            fontFamily: 'var(--font-mono)',
-                            backgroundColor: 'rgba(255,255,255,0.06)',
-                            color: 'var(--text-secondary)',
-                          }}
-                        >
-                          {asset.assetType}
-                        </span>
+                      <td>
+                        <AssetBadge type={asset.assetType} />
                       </td>
-                      <td style={{ padding: '0.75rem 1rem', color: 'var(--text-secondary)' }}>
+                      <td style={{ color: 'var(--text-secondary)' }}>
                         {asset.sector}
                       </td>
-                      <td style={{ padding: '0.75rem 1rem', textAlign: 'right', fontFamily: 'var(--font-mono)' }}>
+                      <td style={{ textAlign: 'right', fontFamily: 'var(--font-mono)', color: 'var(--text-secondary)' }}>
                         ${asset.valueBefore.toFixed(2)}M
                       </td>
                       <td
                         style={{
-                          padding: '0.75rem 1rem',
                           textAlign: 'right',
                           fontFamily: 'var(--font-mono)',
-                          color: asset.shockAppliedPercent >= 0 ? '#34d399' : '#f87171',
+                          fontWeight: '700',
+                          color: asset.shockAppliedPercent >= 0 ? '#10b981' : '#ef4444',
                         }}
                       >
                         {asset.shockAppliedPercent >= 0 ? '+' : ''}{asset.shockAppliedPercent.toFixed(2)}%
                       </td>
-                      <td style={{ padding: '0.75rem 1rem', textAlign: 'right', fontFamily: 'var(--font-mono)', color: '#38bdf8' }}>
+                      <td style={{ textAlign: 'right', fontFamily: 'var(--font-mono)', fontWeight: '700', color: '#38bdf8' }}>
                         ${asset.valueAfter.toFixed(2)}M
                       </td>
                       <td
                         style={{
-                          padding: '0.75rem 1rem',
                           textAlign: 'right',
                           fontFamily: 'var(--font-mono)',
-                          fontWeight: '700',
+                          fontWeight: '800',
                           color: loss ? '#ef4444' : '#10b981',
                         }}
                       >

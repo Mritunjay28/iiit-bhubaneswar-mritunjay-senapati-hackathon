@@ -6,6 +6,9 @@ import {
   Calendar,
   ChevronRight,
   Zap,
+  TrendingDown,
+  FileText,
+  Activity,
 } from 'lucide-react';
 import { RiskEngineApi } from '../services/api';
 import { EventBadge } from '../components/common/Badge';
@@ -38,39 +41,109 @@ export const History = () => {
   }, []);
 
   if (loading) {
-    return <Loader message="Retrieving historical stress test audit trail..." />;
+    return <Loader message="Retrieving institutional audit trail of historical stress test evaluations..." />;
   }
 
+  const averageLoss = history.length > 0
+    ? (history.reduce((acc, h) => acc + (h.totalPnlImpact || 0), 0) / history.length).toFixed(2)
+    : '0.00';
+
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.75rem' }}>
-      {/* Top Header */}
-      <div>
-        <h2 style={{ fontSize: '1.25rem', fontWeight: '700', color: '#ffffff', margin: 0 }}>
-          Stress Test Audit Trail & Scenario History
-        </h2>
-        <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', margin: '0.15rem 0 0 0' }}>
-          Historical record of automated risk triggers and manual portfolio shock evaluations
-        </p>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+      {/* Top Header & Summary Stats */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem' }}>
+        <div>
+          <h2 style={{ fontSize: 'var(--text-h1)', lineHeight: 'var(--leading-snug)', letterSpacing: 'var(--tracking-tighter)', fontWeight: '800', color: '#ffffff', margin: 0, display: 'flex', alignItems: 'center', gap: '0.5rem', fontFamily: 'var(--font-display)' }}>
+            <span style={{
+              width: '26px',
+              height: '26px',
+              borderRadius: '4px',
+              backgroundColor: '#2563eb',
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}>
+              <HistoryIcon size={15} color="#ffffff" />
+            </span>
+            Stress Testing Audit Trail & Run History
+          </h2>
+          <p style={{ fontSize: 'var(--text-caption)', lineHeight: 'var(--leading-relaxed)', letterSpacing: 'var(--tracking-normal)', color: 'var(--text-secondary)', margin: '0.2rem 0 0 0' }}>
+            Immutable historical record of automated market shock triggers and manual quantitative simulations
+          </p>
+        </div>
+
+        <div style={{ display: 'flex', gap: '0.65rem', alignItems: 'center' }}>
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.4rem',
+            padding: '0.35rem 0.75rem',
+            borderRadius: '4px',
+            backgroundColor: '#131418',
+            border: '1px solid var(--border-subtle)',
+            fontSize: 'var(--text-caption)',
+            lineHeight: 'var(--leading-none)',
+            letterSpacing: 'var(--tracking-wide)',
+            color: '#93c5fd',
+            fontWeight: '600',
+          }}>
+            <Activity size={13} color="#2563eb" />
+            <span>{history.length} Certified Runs</span>
+          </div>
+
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.4rem',
+            padding: '0.35rem 0.75rem',
+            borderRadius: '4px',
+            backgroundColor: '#131418',
+            border: '1px solid var(--border-subtle)',
+            fontSize: 'var(--text-caption)',
+            lineHeight: 'var(--leading-none)',
+            letterSpacing: 'var(--tracking-wide)',
+            color: '#f87171',
+            fontWeight: '600',
+          }}>
+            <TrendingDown size={13} color="#ef4444" />
+            <span>Avg Drawdown: ${Math.abs(averageLoss)}M</span>
+          </div>
+
+          {/* The ONE Repeated CTA */}
+          <button
+            onClick={() => navigate('/stress-test')}
+            className="btn btn-cta"
+            style={{ fontSize: 'var(--text-body-sm)', padding: '0.45rem 0.95rem' }}
+          >
+            <Zap size={14} />
+            <span>Simulate Shock</span>
+          </button>
+        </div>
       </div>
 
-      {/* Two-Column Audit Layout */}
+      {/* Two-Column Audit Inspection Layout */}
       <div
         style={{
           display: 'grid',
-          gridTemplateColumns: 'minmax(0, 1.4fr) minmax(0, 1fr)',
+          gridTemplateColumns: 'minmax(0, 1.35fr) minmax(0, 1fr)',
           gap: '1.5rem',
         }}
       >
-        {/* Left: Historical Timeline List */}
-        <div className="glass-panel" style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
-            <HistoryIcon size={18} color="#6366f1" />
-            <h3 style={{ fontSize: '0.95rem', fontWeight: '700', color: '#ffffff', margin: 0 }}>
-              Chronological Audit Log ({history.length} Runs)
-            </h3>
+        {/* Left: Chronological Historical Timeline List (Ref 2 Klips style) */}
+        <div className="institutional-card scroll-reveal" style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.25rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <FileText size={17} color="#2563eb" />
+              <h3 style={{ fontSize: 'var(--text-h3)', lineHeight: 'var(--leading-snug)', letterSpacing: 'var(--tracking-tight)', fontWeight: '700', color: '#ffffff', margin: 0 }}>
+                Chronological Execution Log
+              </h3>
+            </div>
+            <span style={{ fontSize: 'var(--text-caption)', lineHeight: 'var(--leading-none)', letterSpacing: 'var(--tracking-normal)', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
+              Select run to inspect parameters
+            </span>
           </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
             {history.map((run) => {
               const isSelected = selectedRun?.id === run.id;
               const isLoss = (run.totalPnlImpact || 0) < 0;
@@ -78,51 +151,56 @@ export const History = () => {
                 <div
                   key={run.id}
                   onClick={() => setSelectedRun(run)}
+                  className="history-run-card"
                   style={{
-                    padding: '1rem 1.25rem',
-                    borderRadius: '8px',
-                    border: isSelected ? '1px solid var(--accent-primary)' : '1px solid var(--border-subtle)',
-                    backgroundColor: isSelected ? 'rgba(99, 102, 241, 0.12)' : 'rgba(255, 255, 255, 0.02)',
+                    padding: '0.85rem 1.15rem',
+                    borderRadius: '6px',
+                    border: isSelected ? '1px solid #2563eb' : '1px solid var(--border-subtle)',
+                    borderLeft: isSelected ? '4px solid #2563eb' : '1px solid var(--border-subtle)',
+                    backgroundColor: isSelected ? '#191b22' : '#14151a',
                     cursor: 'pointer',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'space-between',
-                    transition: 'all var(--transition-fast)',
                   }}
                 >
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
-                      <span style={{ fontWeight: '700', color: '#ffffff', fontSize: '0.925rem' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                      <span style={{ fontWeight: '800', color: '#ffffff', fontSize: 'var(--text-h3)', lineHeight: 'var(--leading-snug)', letterSpacing: 'var(--tracking-tight)' }}>
                         {run.scenarioName}
                       </span>
                       <EventBadge type={run.eventType} />
                     </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', fontSize: 'var(--text-caption)', lineHeight: 'var(--leading-none)', letterSpacing: 'var(--tracking-normal)', color: 'var(--text-muted)' }}>
                       <span style={{ display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
-                        <Calendar size={13} />
+                        <Calendar size={12} color="var(--text-secondary)" />
                         {run.executedAt ? new Date(run.executedAt).toLocaleString([], { dateStyle: 'short', timeStyle: 'short' }) : 'Recent'}
                       </span>
-                      <span>Run ID: #{run.id}</span>
+                      <span style={{ fontFamily: 'var(--font-mono)', color: 'var(--text-secondary)' }}>
+                        Run #{run.id}
+                      </span>
                     </div>
                   </div>
 
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
                     <div style={{ textAlign: 'right' }}>
                       <div
                         style={{
-                          fontSize: '1.05rem',
-                          fontWeight: '700',
+                          fontSize: 'var(--text-display-md)',
+                          lineHeight: 'var(--leading-tight)',
+                          letterSpacing: 'var(--tracking-tightest)',
+                          fontWeight: '800',
                           fontFamily: 'var(--font-mono)',
                           color: isLoss ? '#ef4444' : '#10b981',
                         }}
                       >
                         {isLoss ? '-' : '+'}${Math.abs(run.totalPnlImpact).toFixed(2)}M
                       </div>
-                      <div style={{ fontSize: '0.725rem', fontFamily: 'var(--font-mono)', color: isLoss ? '#f87171' : '#34d399' }}>
+                      <div style={{ fontSize: 'var(--text-caption)', lineHeight: 'var(--leading-snug)', letterSpacing: 'var(--tracking-tight)', fontFamily: 'var(--font-mono)', fontWeight: '700', color: isLoss ? '#f87171' : '#34d399' }}>
                         {run.percentageChange >= 0 ? '+' : ''}{run.percentageChange.toFixed(2)}%
                       </div>
                     </div>
-                    <ChevronRight size={16} color="var(--text-muted)" />
+                    <ChevronRight size={16} color={isSelected ? '#2563eb' : 'var(--text-muted)'} />
                   </div>
                 </div>
               );
@@ -132,66 +210,96 @@ export const History = () => {
 
         {/* Right: Selected Run Detail Inspection Card */}
         {selectedRun ? (
-          <div className="glass-panel" style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <div className="institutional-card scroll-reveal" style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1.15rem', height: 'fit-content' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid var(--border-subtle)', paddingBottom: '0.65rem' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <ShieldCheck size={18} color="#10b981" />
-                <h3 style={{ fontSize: '0.95rem', fontWeight: '700', color: '#ffffff', margin: 0 }}>
-                  Audit Run #{selectedRun.id} Details
+                <ShieldCheck size={17} color="#10b981" />
+                <h3 style={{ fontSize: 'var(--text-h3)', lineHeight: 'var(--leading-snug)', letterSpacing: 'var(--tracking-tight)', fontWeight: '700', color: '#ffffff', margin: 0 }}>
+                  Audit Run #{selectedRun.id} Inspector
                 </h3>
               </div>
+
+              {/* The ONE Repeated CTA */}
               <button
                 onClick={() => navigate('/stress-test')}
-                className="btn btn-outline"
-                style={{ padding: '0.35rem 0.65rem', fontSize: '0.75rem' }}
+                className="btn btn-cta"
+                style={{ padding: '0.3rem 0.75rem', fontSize: 'var(--text-caption)' }}
               >
                 <Zap size={13} />
-                <span>Rerun Test</span>
+                <span>Simulate Shock</span>
               </button>
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
-              <div style={{ padding: '0.85rem', backgroundColor: 'rgba(255,255,255,0.02)', borderRadius: '8px', border: '1px solid var(--border-subtle)' }}>
-                <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Event Category</div>
-                <div style={{ marginTop: '0.3rem' }}>
+              {/* Event Category Details */}
+              <div style={{ padding: '0.85rem', backgroundColor: '#131418', borderRadius: '6px', border: '1px solid var(--border-subtle)' }}>
+                <div style={{ fontSize: 'var(--text-overline)', lineHeight: 'var(--leading-none)', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: 'var(--tracking-widest)', fontWeight: '600' }}>
+                  Shock Blueprint & Category
+                </div>
+                <div style={{ fontSize: 'var(--text-h2)', lineHeight: 'var(--leading-snug)', letterSpacing: 'var(--tracking-tighter)', fontWeight: '800', color: '#ffffff', marginTop: '0.2rem' }}>
+                  {selectedRun.scenarioName}
+                </div>
+                <div style={{ marginTop: '0.35rem' }}>
                   <EventBadge type={selectedRun.eventType} />
                 </div>
               </div>
 
+              {/* Before vs After Grid */}
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.75rem' }}>
-                <div style={{ padding: '0.85rem', backgroundColor: 'rgba(255,255,255,0.02)', borderRadius: '8px', border: '1px solid var(--border-subtle)' }}>
-                  <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Portfolio Value Before</div>
-                  <div style={{ fontSize: '1.15rem', fontWeight: '700', fontFamily: 'var(--font-mono)', color: '#ffffff', marginTop: '0.2rem' }}>
+                <div style={{ padding: '0.85rem', backgroundColor: '#131418', borderRadius: '6px', border: '1px solid var(--border-subtle)' }}>
+                  <div style={{ fontSize: 'var(--text-overline)', lineHeight: 'var(--leading-none)', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: 'var(--tracking-widest)', fontWeight: '600' }}>
+                    Baseline Portfolio
+                  </div>
+                  <div style={{ fontSize: 'var(--text-h1)', lineHeight: 'var(--leading-tight)', letterSpacing: 'var(--tracking-tightest)', fontWeight: '800', fontFamily: 'var(--font-mono)', color: '#ffffff', marginTop: '0.2rem' }}>
                     ${selectedRun.portfolioValueBefore.toFixed(1)}M
                   </div>
                 </div>
 
-                <div style={{ padding: '0.85rem', backgroundColor: 'rgba(255,255,255,0.02)', borderRadius: '8px', border: '1px solid var(--border-subtle)' }}>
-                  <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Stressed Portfolio Value</div>
-                  <div style={{ fontSize: '1.15rem', fontWeight: '700', fontFamily: 'var(--font-mono)', color: '#38bdf8', marginTop: '0.2rem' }}>
+                <div style={{ padding: '0.85rem', backgroundColor: '#131418', borderRadius: '6px', border: '1px solid var(--border-subtle)' }}>
+                  <div style={{ fontSize: 'var(--text-overline)', lineHeight: 'var(--leading-none)', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: 'var(--tracking-widest)', fontWeight: '600' }}>
+                    Stressed Portfolio
+                  </div>
+                  <div style={{ fontSize: 'var(--text-h1)', lineHeight: 'var(--leading-tight)', letterSpacing: 'var(--tracking-tightest)', fontWeight: '800', fontFamily: 'var(--font-mono)', color: '#0284c7', marginTop: '0.2rem' }}>
                     ${selectedRun.portfolioValueAfter.toFixed(1)}M
                   </div>
                 </div>
               </div>
 
-              <div style={{ padding: '0.85rem', backgroundColor: 'rgba(239, 68, 68, 0.08)', borderRadius: '8px', border: '1px solid rgba(239, 68, 68, 0.25)' }}>
-                <div style={{ fontSize: '0.75rem', color: '#fca5a5' }}>Net PnL Impact Under Shock</div>
-                <div style={{ fontSize: '1.35rem', fontWeight: '800', fontFamily: 'var(--font-mono)', color: '#ef4444', marginTop: '0.2rem' }}>
-                  -${Math.abs(selectedRun.totalPnlImpact).toFixed(2)}M ({selectedRun.percentageChange.toFixed(2)}%)
+              {/* Net PnL Impact Banner */}
+              <div style={{
+                padding: '0.85rem',
+                backgroundColor: 'rgba(239, 68, 68, 0.08)',
+                borderRadius: '6px',
+                border: '1px solid rgba(239, 68, 68, 0.3)',
+              }}>
+                <div style={{ fontSize: 'var(--text-overline)', lineHeight: 'var(--leading-none)', color: '#fca5a5', textTransform: 'uppercase', letterSpacing: 'var(--tracking-widest)', fontWeight: '700' }}>
+                  Quantitative PnL Drawdown
+                </div>
+                <div style={{ fontSize: 'var(--text-display-lg)', lineHeight: 'var(--leading-tight)', letterSpacing: 'var(--tracking-tightest)', fontWeight: '900', fontFamily: 'var(--font-mono)', color: '#ef4444', marginTop: '0.2rem' }}>
+                  -${Math.abs(selectedRun.totalPnlImpact).toFixed(2)}M
+                </div>
+                <div style={{ fontSize: 'var(--text-caption)', lineHeight: 'var(--leading-snug)', letterSpacing: 'var(--tracking-tight)', fontFamily: 'var(--font-mono)', color: '#fda4af', marginTop: '0.1rem' }}>
+                  Erosion: {selectedRun.percentageChange.toFixed(2)}% of notional
                 </div>
               </div>
 
-              <div style={{ padding: '0.85rem', backgroundColor: 'rgba(255,255,255,0.02)', borderRadius: '8px', border: '1px solid var(--border-subtle)' }}>
-                <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Audit Execution Timestamp</div>
-                <div style={{ fontSize: '0.85rem', fontFamily: 'var(--font-mono)', color: 'var(--text-secondary)', marginTop: '0.2rem' }}>
-                  {selectedRun.executedAt ? new Date(selectedRun.executedAt).toISOString() : 'Recent'}
+              {/* Execution Timestamp */}
+              <div style={{ padding: '0.85rem', backgroundColor: '#131418', borderRadius: '6px', border: '1px solid var(--border-subtle)' }}>
+                <div style={{ fontSize: 'var(--text-overline)', lineHeight: 'var(--leading-none)', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: 'var(--tracking-widest)', fontWeight: '600' }}>
+                  Audit Trail Timestamp & Signature
+                </div>
+                <div style={{ fontSize: 'var(--text-body-sm)', lineHeight: 'var(--leading-snug)', letterSpacing: 'var(--tracking-normal)', fontFamily: 'var(--font-mono)', color: '#94a3b8', marginTop: '0.2rem' }}>
+                  {selectedRun.executedAt ? new Date(selectedRun.executedAt).toUTCString() : 'Recent Session'}
+                </div>
+                <div style={{ fontSize: 'var(--text-micro)', lineHeight: 'var(--leading-normal)', letterSpacing: 'var(--tracking-normal)', color: 'var(--text-muted)', marginTop: '0.2rem' }}>
+                  Engine: RiskEngine Module B (Monte Carlo + Delta Normal)
                 </div>
               </div>
             </div>
           </div>
         ) : (
-          <div className="glass-panel" style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-muted)' }}>
-            Select an audit log entry to inspect parameters.
+          <div className="institutional-card" style={{ padding: '2.5rem', textAlign: 'center', color: 'var(--text-muted)' }}>
+            Select an audit entry from the execution log to inspect quantitative parameters.
           </div>
         )}
       </div>

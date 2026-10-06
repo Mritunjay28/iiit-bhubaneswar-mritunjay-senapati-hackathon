@@ -76,7 +76,8 @@ export class ErrorBoundary extends React.Component {
                   alignItems: 'center',
                   justifyContent: 'center',
                   color: '#ef4444',
-                  fontSize: '1.25rem',
+                  fontSize: 'var(--text-h2)',
+                  lineHeight: 'var(--leading-none)',
                   fontWeight: 'bold',
                 }}
               >
@@ -86,8 +87,10 @@ export class ErrorBoundary extends React.Component {
                 <h3
                   style={{
                     margin: 0,
-                    fontSize: '1.15rem',
-                    fontWeight: 600,
+                    fontSize: 'var(--text-h2)',
+                    lineHeight: 'var(--leading-snug)',
+                    letterSpacing: 'var(--tracking-tighter)',
+                    fontWeight: 700,
                     color: '#ffffff',
                     fontFamily: 'var(--font-sans)',
                   }}
@@ -97,7 +100,9 @@ export class ErrorBoundary extends React.Component {
                 <p
                   style={{
                     margin: 0,
-                    fontSize: '0.85rem',
+                    fontSize: 'var(--text-caption)',
+                    lineHeight: 'var(--leading-relaxed)',
+                    letterSpacing: 'var(--tracking-normal)',
                     color: 'var(--text-secondary, #94a3b8)',
                   }}
                 >
@@ -115,7 +120,9 @@ export class ErrorBoundary extends React.Component {
                 padding: '1rem',
                 margin: '1.25rem 0',
                 fontFamily: 'var(--font-mono)',
-                fontSize: '0.825rem',
+                fontSize: 'var(--text-body-sm)',
+                lineHeight: 'var(--leading-normal)',
+                letterSpacing: 'var(--tracking-normal)',
                 color: '#f87171',
                 wordBreak: 'break-word',
               }}
@@ -133,8 +140,10 @@ export class ErrorBoundary extends React.Component {
                   border: 'none',
                   borderRadius: '6px',
                   padding: '0.6rem 1.25rem',
-                  fontSize: '0.875rem',
-                  fontWeight: 500,
+                  fontSize: 'var(--text-body-sm)',
+                  lineHeight: 'var(--leading-none)',
+                  letterSpacing: 'var(--tracking-wide)',
+                  fontWeight: 600,
                   cursor: 'pointer',
                   transition: 'background 0.2s',
                 }}
@@ -151,7 +160,9 @@ export class ErrorBoundary extends React.Component {
                   border: '1px solid var(--border-subtle, rgba(255, 255, 255, 0.15))',
                   borderRadius: '6px',
                   padding: '0.6rem 1.25rem',
-                  fontSize: '0.875rem',
+                  fontSize: 'var(--text-body-sm)',
+                  lineHeight: 'var(--leading-none)',
+                  letterSpacing: 'var(--tracking-wide)',
                   cursor: 'pointer',
                 }}
               >
@@ -163,7 +174,9 @@ export class ErrorBoundary extends React.Component {
                   backgroundColor: 'transparent',
                   color: 'var(--text-muted, #64748b)',
                   border: 'none',
-                  fontSize: '0.8rem',
+                  fontSize: 'var(--text-caption)',
+                  lineHeight: 'var(--leading-none)',
+                  letterSpacing: 'var(--tracking-normal)',
                   cursor: 'pointer',
                   marginLeft: 'auto',
                   textDecoration: 'underline',
@@ -182,7 +195,9 @@ export class ErrorBoundary extends React.Component {
                   backgroundColor: '#0a0d14',
                   border: '1px solid rgba(255, 255, 255, 0.05)',
                   borderRadius: '6px',
-                  fontSize: '0.75rem',
+                  fontSize: 'var(--text-caption)',
+                  lineHeight: 'var(--leading-relaxed)',
+                  letterSpacing: 'var(--tracking-normal)',
                   color: '#94a3b8',
                   maxHeight: '200px',
                   overflowY: 'auto',

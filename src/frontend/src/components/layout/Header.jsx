@@ -26,12 +26,12 @@ export const Header = () => {
 
   const getPageTitle = (path) => {
     switch (path) {
-      case '/': return { title: 'Executive Risk Dashboard', subtitle: 'Real-time financial NLP signals and cross-asset portfolio exposure' };
-      case '/stress-test': return { title: 'Strategic Stress Testing Engine', subtitle: 'Simulate macroeconomic and geopolitical shocks across bonds, loans, equities & derivatives' };
-      case '/signals': return { title: 'Risk Signals & Intelligence Feed', subtitle: 'FinBERT sentiment and keyword-classified event taxonomy from GDELT & Twitter' };
-      case '/portfolio': return { title: 'Portfolio Allocation & Risk Analytics', subtitle: 'Multi-asset synthetic portfolio ($585M notional) with duration and spread exposures' };
-      case '/history': return { title: 'Stress Test Audit Trail', subtitle: 'Historical record of automated triggers and manual simulation runs' };
-      default: return { title: 'RiskEngine AI', subtitle: 'Automated Portfolio Stress Testing' };
+      case '/': return { title: 'Executive Risk Dashboard', subtitle: 'Live NLP sentiment triggers and cross-asset portfolio exposure' };
+      case '/stress-test': return { title: 'Portfolio Stress Engine', subtitle: 'Simulate macroeconomic and geopolitical shocks across bonds, loans, equities & derivatives' };
+      case '/signals': return { title: 'Risk Signals & Intelligence Stream', subtitle: 'FinBERT sentiment and keyword-classified event taxonomy from GDELT & Twitter' };
+      case '/portfolio': return { title: 'Multi-Asset Portfolio Allocation', subtitle: 'Synthetic $585.0M benchmark portfolio with duration and spread sensitivities' };
+      case '/history': return { title: 'Stress Test Audit Trail', subtitle: 'Chronological execution log of automated triggers and quantitative scenarios' };
+      default: return { title: 'RiskEngine AI', subtitle: 'Institutional Portfolio Stress Testing' };
     }
   };
 
@@ -40,9 +40,8 @@ export const Header = () => {
   return (
     <header
       style={{
-        height: '72px',
-        backgroundColor: 'rgba(15, 23, 42, 0.85)',
-        backdropFilter: 'blur(12px)',
+        height: '68px',
+        backgroundColor: 'var(--bg-secondary)',
         borderBottom: '1px solid var(--border-subtle)',
         display: 'flex',
         alignItems: 'center',
@@ -56,74 +55,79 @@ export const Header = () => {
       <div>
         <h1
           style={{
-            fontSize: '1.25rem',
+            fontSize: 'var(--text-h1)',
             fontWeight: '700',
-            color: '#ffffff',
-            letterSpacing: '-0.02em',
+            lineHeight: 'var(--leading-snug)',
+            letterSpacing: 'var(--tracking-tighter)',
+            color: 'var(--text-primary)',
             margin: 0,
+            fontFamily: 'var(--font-display)',
           }}
         >
           {page.title}
         </h1>
         <p
           style={{
-            fontSize: '0.75rem',
+            fontSize: 'var(--text-caption)',
+            lineHeight: 'var(--leading-normal)',
+            letterSpacing: 'var(--tracking-normal)',
             color: 'var(--text-secondary)',
-            margin: '0.15rem 0 0 0',
+            margin: '0.2rem 0 0 0',
           }}
         >
           {page.subtitle}
         </p>
       </div>
 
-      <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-        {/* Real-time System Pulse */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
+        {/* Real-time Telemetry Status */}
         <div
           style={{
             display: 'flex',
             alignItems: 'center',
-            gap: '0.5rem',
-            padding: '0.4rem 0.75rem',
-            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+            gap: '0.45rem',
+            padding: '0.35rem 0.75rem',
+            backgroundColor: 'rgba(16, 185, 129, 0.08)',
             border: '1px solid rgba(16, 185, 129, 0.25)',
-            borderRadius: '20px',
-            fontSize: '0.75rem',
+            borderRadius: '4px',
+            fontSize: 'var(--text-caption)',
+            lineHeight: 'var(--leading-none)',
+            letterSpacing: 'var(--tracking-normal)',
             fontFamily: 'var(--font-mono)',
-            color: '#34d399',
+            color: '#10b981',
           }}
         >
           <span
             style={{
-              width: '8px',
-              height: '8px',
+              width: '7px',
+              height: '7px',
               borderRadius: '50%',
               backgroundColor: '#10b981',
-              boxShadow: '0 0 8px #10b981',
             }}
             className="pulse-indicator"
           />
-          <span>Pipeline: {status.nlpServiceOnline ? 'FinBERT Live' : 'Fallback Active'}</span>
+          <span>{status.nlpServiceOnline ? 'FinBERT Live' : 'Fallback Active'}</span>
         </div>
 
         {/* Global Manual Refresh Button */}
         <button
           onClick={handleRefresh}
           className="btn btn-outline"
-          title="Refresh real-time data"
+          title="Refresh real-time telemetry"
           style={{ padding: '0.45rem 0.75rem' }}
         >
-          <RefreshCw size={14} className={refreshing ? 'pulse-indicator' : ''} />
+          <RefreshCw size={14} className={refreshing ? 'spin-icon' : ''} />
           <span>Sync</span>
         </button>
 
-        {/* Hero Trigger Quick Action */}
+        {/* The ONE Repeated CTA */}
         <button
           onClick={() => navigate('/stress-test')}
-          className="btn btn-primary"
+          className="btn btn-cta"
           style={{ padding: '0.45rem 0.95rem' }}
         >
           <Zap size={14} />
-          <span>Launch Stress Test</span>
+          <span>Simulate Shock</span>
         </button>
       </div>
     </header>

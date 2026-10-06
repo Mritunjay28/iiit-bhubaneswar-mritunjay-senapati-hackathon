@@ -30,10 +30,11 @@ export const Loader = ({ message = 'Computing quantitative risk metrics...' }) =
       `}</style>
       <span
         style={{
-          fontSize: '0.875rem',
+          fontSize: 'var(--text-body-sm)',
+          lineHeight: 'var(--leading-normal)',
+          letterSpacing: 'var(--tracking-normal)',
           color: 'var(--text-secondary)',
           fontFamily: 'var(--font-mono)',
-          letterSpacing: '0.02em',
         }}
       >
         {message}

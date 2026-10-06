@@ -18,31 +18,31 @@ const CustomTooltip = ({ active, payload, label }) => {
     return (
       <div
         style={{
-          backgroundColor: '#0f172a',
-          border: '1px solid var(--border-medium)',
+          backgroundColor: '#15171c',
+          border: '1px solid #242731',
           padding: '0.65rem 0.85rem',
-          borderRadius: '8px',
-          boxShadow: '0 4px 15px rgba(0,0,0,0.5)',
+          borderRadius: '6px',
+          boxShadow: '0 4px 15px rgba(0,0,0,0.6)',
           fontFamily: 'var(--font-sans)',
         }}
       >
-        <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '0.25rem' }}>
+        <div style={{ fontSize: 'var(--text-caption)', lineHeight: 'var(--leading-snug)', letterSpacing: 'var(--tracking-normal)', color: 'var(--text-muted)', marginBottom: '0.25rem' }}>
           Time: <span style={{ color: '#fff', fontFamily: 'var(--font-mono)' }}>{label}</span> | Entity: {data.entity}
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Sentiment:</span>
+          <span style={{ fontSize: 'var(--text-caption)', lineHeight: 'var(--leading-normal)', color: 'var(--text-secondary)' }}>FinBERT:</span>
           <span
             style={{
               fontFamily: 'var(--font-mono)',
               fontWeight: '700',
-              color: isBullish ? '#34d399' : '#f87171',
+              color: isBullish ? '#10b981' : '#ef4444',
             }}
           >
             {val > 0 ? `+${val.toFixed(2)}` : val.toFixed(2)} ({isBullish ? 'Bullish' : 'Bearish'})
           </span>
         </div>
-        <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.2rem' }}>
-          Impact Score: <span style={{ color: '#f59e0b', fontWeight: '600' }}>{data.impact}/10</span>
+        <div style={{ fontSize: 'var(--text-micro)', lineHeight: 'var(--leading-normal)', letterSpacing: 'var(--tracking-normal)', color: 'var(--text-muted)', marginTop: '0.2rem' }}>
+          Impact Factor: <span style={{ color: '#f59e0b', fontWeight: '600' }}>{data.impact}/10</span>
         </div>
       </div>
     );
@@ -61,29 +61,29 @@ export const SentimentArea = React.memo(({ signals = [] }) => {
     : [
         { time: '10:00', sentiment: 0.15, impact: 3, entity: 'S&P 500' },
         { time: '11:00', sentiment: -0.25, impact: 5, entity: 'US Treasury' },
-        { time: '12:00', sentiment: 0.45, impact: 4, entity: 'Tech Sector' },
+        { time: '12:00', sentiment: 0.45, impact: 4, entity: 'Tech Index' },
         { time: '13:00', sentiment: -0.65, impact: 7, entity: 'Credit Default' },
         { time: '14:00', sentiment: -0.84, impact: 8, entity: 'Banking' },
         { time: '15:00', sentiment: -0.78, impact: 9, entity: 'Crude Oil' },
       ];
 
   return (
-    <div style={{ width: '100%', height: 260 }}>
+    <div style={{ width: '100%', height: 240 }}>
       <ResponsiveContainer width="100%" height="100%">
         <AreaChart data={chartData} margin={{ top: 10, right: 15, left: -20, bottom: 0 }}>
           <defs>
             <linearGradient id="sentimentGradient" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#6366f1" stopOpacity={0.6} />
-              <stop offset="95%" stopColor="#6366f1" stopOpacity={0.0} />
+              <stop offset="5%" stopColor="#2563eb" stopOpacity={0.4} />
+              <stop offset="95%" stopColor="#2563eb" stopOpacity={0.0} />
             </linearGradient>
           </defs>
-          <CartesianGrid strokeDasharray="3 3" stroke="rgba(255, 255, 255, 0.05)" vertical={false} />
+          <CartesianGrid strokeDasharray="2 2" stroke="#242731" vertical={false} />
           <XAxis
             dataKey="time"
             stroke="var(--text-muted)"
             fontSize={11}
             tickLine={false}
-            axisLine={{ stroke: 'rgba(255, 255, 255, 0.1)' }}
+            axisLine={{ stroke: '#242731' }}
           />
           <YAxis
             stroke="var(--text-muted)"
@@ -93,13 +93,13 @@ export const SentimentArea = React.memo(({ signals = [] }) => {
             domain={[-1.0, 1.0]}
             ticks={[-1.0, -0.5, 0, 0.5, 1.0]}
           />
-          <ReferenceLine y={0} stroke="rgba(255, 255, 255, 0.2)" strokeDasharray="2 2" />
+          <ReferenceLine y={0} stroke="#404450" strokeDasharray="2 2" />
           <Tooltip content={<CustomTooltip />} />
           <Area
             type="monotone"
             dataKey="sentiment"
-            stroke="#6366f1"
-            strokeWidth={2.5}
+            stroke="#2563eb"
+            strokeWidth={2}
             fillOpacity={1}
             fill="url(#sentimentGradient)"
           />

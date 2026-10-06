@@ -6,23 +6,23 @@ import {
   Radio,
   PieChart,
   History,
-  ShieldAlert,
+  ShieldCheck,
   Server,
 } from 'lucide-react';
 
 export const Sidebar = () => {
   const navItems = [
     { to: '/', label: 'Executive Dashboard', icon: LayoutDashboard },
-    { to: '/stress-test', label: 'Stress Test Engine', icon: Zap, badge: 'Hero' },
-    { to: '/signals', label: 'Risk Signal Feed', icon: Radio },
-    { to: '/portfolio', label: 'Portfolio Analytics', icon: PieChart },
+    { to: '/stress-test', label: 'Portfolio Stress Engine', icon: Zap, badge: 'Target' },
+    { to: '/signals', label: 'Risk Signal Stream', icon: Radio },
+    { to: '/portfolio', label: 'Portfolio Holdings', icon: PieChart },
     { to: '/history', label: 'Audit History', icon: History },
   ];
 
   return (
     <aside
       style={{
-        width: '260px',
+        width: '250px',
         backgroundColor: 'var(--bg-secondary)',
         borderRight: '1px solid var(--border-subtle)',
         display: 'flex',
@@ -37,7 +37,7 @@ export const Sidebar = () => {
       {/* Brand & Platform Header */}
       <div
         style={{
-          padding: '1.5rem 1.25rem 1.25rem',
+          padding: '1.25rem 1.25rem',
           borderBottom: '1px solid var(--border-subtle)',
           display: 'flex',
           alignItems: 'center',
@@ -46,39 +46,43 @@ export const Sidebar = () => {
       >
         <div
           style={{
-            width: '36px',
-            height: '36px',
-            borderRadius: '9px',
-            background: 'linear-gradient(135deg, #6366f1 0%, #06b6d4 100%)',
+            width: '34px',
+            height: '34px',
+            borderRadius: '6px',
+            backgroundColor: '#2563eb',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            boxShadow: '0 0 15px rgba(99, 102, 241, 0.4)',
           }}
         >
-          <ShieldAlert size={20} color="#ffffff" />
+          <ShieldCheck size={20} color="#ffffff" />
         </div>
+
         <div style={{ display: 'flex', flexDirection: 'column' }}>
           <span
             style={{
               fontWeight: '800',
-              fontSize: '1.05rem',
-              letterSpacing: '-0.02em',
+              fontSize: 'var(--text-h2)',
+              lineHeight: 'var(--leading-snug)',
+              letterSpacing: 'var(--tracking-tighter)',
               color: '#ffffff',
+              fontFamily: 'var(--font-display)',
               display: 'flex',
               alignItems: 'center',
               gap: '0.35rem',
             }}
           >
-            RiskEngine <span style={{ color: 'var(--accent-cyan)', fontSize: '0.8rem', fontWeight: '600' }}>AI</span>
+            RiskEngine <span style={{ color: '#38bdf8', fontSize: 'var(--text-micro)', letterSpacing: 'var(--tracking-wider)', fontWeight: '700' }}>TERMINAL</span>
           </span>
           <span
             style={{
-              fontSize: '0.675rem',
+              fontSize: 'var(--text-overline)',
+              lineHeight: 'var(--leading-none)',
               color: 'var(--text-muted)',
               fontFamily: 'var(--font-mono)',
               textTransform: 'uppercase',
-              letterSpacing: '0.04em',
+              letterSpacing: 'var(--tracking-wider)',
+              marginTop: '0.15rem',
             }}
           >
             S&P / CRISIL Module B
@@ -87,18 +91,19 @@ export const Sidebar = () => {
       </div>
 
       {/* Navigation Menu */}
-      <nav style={{ padding: '1.25rem 0.75rem', flex: 1, display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
+      <nav style={{ padding: '1.25rem 0.65rem', flex: 1, display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
         <div
           style={{
-            fontSize: '0.675rem',
+            fontSize: 'var(--text-overline)',
+            lineHeight: 'var(--leading-none)',
             color: 'var(--text-muted)',
             fontWeight: '700',
             textTransform: 'uppercase',
-            letterSpacing: '0.08em',
+            letterSpacing: 'var(--tracking-wider)',
             padding: '0 0.6rem 0.5rem',
           }}
         >
-          Core Platform
+          Navigation
         </div>
         {navItems.map((item) => {
           const Icon = item.icon;
@@ -106,36 +111,39 @@ export const Sidebar = () => {
             <NavLink
               key={item.to}
               to={item.to}
+              className="sidebar-nav-link"
               style={({ isActive }) => ({
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'space-between',
-                padding: '0.65rem 0.75rem',
-                borderRadius: '8px',
-                fontSize: '0.875rem',
-                fontWeight: isActive ? '600' : '500',
+                padding: '0.6rem 0.75rem',
+                borderRadius: '6px',
+                fontSize: 'var(--text-body-sm)',
+                lineHeight: 'var(--leading-none)',
+                letterSpacing: 'var(--tracking-normal)',
+                fontWeight: isActive ? '700' : '500',
                 color: isActive ? '#ffffff' : 'var(--text-secondary)',
-                backgroundColor: isActive ? 'rgba(99, 102, 241, 0.15)' : 'transparent',
-                border: isActive ? '1px solid rgba(99, 102, 241, 0.3)' : '1px solid transparent',
+                backgroundColor: isActive ? 'var(--bg-subtle)' : 'transparent',
+                border: isActive ? '1px solid var(--border-medium)' : '1px solid transparent',
                 textDecoration: 'none',
-                transition: 'all var(--transition-fast)',
               })}
             >
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                <Icon size={18} />
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+                <Icon size={17} />
                 <span>{item.label}</span>
               </div>
               {item.badge && (
                 <span
                   style={{
-                    fontSize: '0.65rem',
+                    fontSize: 'var(--text-micro)',
+                    lineHeight: 'var(--leading-none)',
+                    letterSpacing: 'var(--tracking-wide)',
                     fontWeight: '700',
                     fontFamily: 'var(--font-mono)',
-                    backgroundColor: 'rgba(99, 102, 241, 0.3)',
-                    color: '#a5b4fc',
-                    padding: '0.1rem 0.4rem',
-                    borderRadius: '4px',
-                    border: '1px solid rgba(99, 102, 241, 0.5)',
+                    backgroundColor: '#1d4ed8',
+                    color: '#ffffff',
+                    padding: '0.15rem 0.4rem',
+                    borderRadius: '3px',
                   }}
                 >
                   {item.badge}
@@ -146,34 +154,34 @@ export const Sidebar = () => {
         })}
       </nav>
 
-      {/* Microservice Architecture Telemetry Card */}
+      {/* Institutional Microservice Telemetry Card */}
       <div
         style={{
           margin: '0.75rem',
           padding: '0.85rem',
-          backgroundColor: 'rgba(0, 0, 0, 0.25)',
+          backgroundColor: '#131418',
           border: '1px solid var(--border-subtle)',
-          borderRadius: '8px',
+          borderRadius: '6px',
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
-          <Server size={14} color="#06b6d4" />
-          <span style={{ fontSize: '0.725rem', fontWeight: '600', color: 'var(--text-secondary)' }}>
-            Service Mesh Telemetry
+          <Server size={14} color="#3b82f6" />
+          <span style={{ fontSize: 'var(--text-overline)', lineHeight: 'var(--leading-none)', fontWeight: '700', color: 'var(--text-secondary)', letterSpacing: 'var(--tracking-wider)', textTransform: 'uppercase' }}>
+            System Infrastructure
           </span>
         </div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem', fontSize: '0.7rem', fontFamily: 'var(--font-mono)' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem', fontSize: 'var(--text-micro)', lineHeight: 'var(--leading-normal)', letterSpacing: 'var(--tracking-normal)', fontFamily: 'var(--font-mono)' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-muted)' }}>
-            <span>Spring API:</span>
-            <span style={{ color: '#10b981' }}>:8080 Active</span>
+            <span>Spring Boot Core:</span>
+            <span style={{ color: '#10b981', fontWeight: '600' }}>:8080 Active</span>
           </div>
           <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-muted)' }}>
             <span>FinBERT NLP:</span>
-            <span style={{ color: '#10b981' }}>:8000 Loaded</span>
+            <span style={{ color: '#10b981', fontWeight: '600' }}>:8000 Online</span>
           </div>
           <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-muted)' }}>
             <span>PostgreSQL:</span>
-            <span style={{ color: '#10b981' }}>:5432 Ready</span>
+            <span style={{ color: '#10b981', fontWeight: '600' }}>:5432 Ready</span>
           </div>
         </div>
       </div>
