@@ -134,4 +134,38 @@ public class RiskEngineIntegrationTest {
                 .andExpect(jsonPath("$.message", containsString("Stress test result not found with ID: 999999")))
                 .andExpect(jsonPath("$.timestamp").exists());
     }
+
+    @Test
+    @DisplayName("GET /api and GET / return 200 with API discovery catalog")
+    public void testGetApiRootDiscovery() throws Exception {
+        mockMvc.perform(get("/api"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("UP"))
+                .andExpect(jsonPath("$.name", notNullValue()))
+                .andExpect(jsonPath("$.endpoints.systemStatus").value("/api/system/status"))
+                .andExpect(jsonPath("$.endpoints.portfolio").value("/api/portfolio"));
+
+        mockMvc.perform(get("/"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("UP"));
+    }
+
+    @Test
+    @DisplayName("GET non-existent endpoint returns structured 404 instead of 500")
+    public void testNonExistentEndpointReturnsStructured404() throws Exception {
+        mockMvc.perform(get("/api/non-existent-endpoint"))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.status").value(404))
+                .andExpect(jsonPath("$.error").value("Not Found"))
+                .andExpect(jsonPath("$.message", containsString("Endpoint or resource not found: /api/non-existent-endpoint")));
+    }
+
+    @Test
+    @DisplayName("Unsupported HTTP method returns structured 405 Method Not Allowed")
+    public void testUnsupportedMethodReturnsStructured405() throws Exception {
+        mockMvc.perform(patch("/api/portfolio/summary"))
+                .andExpect(status().isMethodNotAllowed())
+                .andExpect(jsonPath("$.status").value(405))
+                .andExpect(jsonPath("$.error").value("Method Not Allowed"));
+    }
 }

@@ -39,6 +39,10 @@ public class SignalStatsDto {
         this.averageSentiment = averageSentiment;
     }
 
+    public Double getAvgSentimentScore() {
+        return averageSentiment;
+    }
+
     public Map<String, Long> getEventTypeDistribution() {
         return eventTypeDistribution;
     }

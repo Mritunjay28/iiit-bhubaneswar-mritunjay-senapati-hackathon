@@ -109,7 +109,7 @@ uvicorn app.main:app --host 0.0.0.0 --port 8000
 
 # 2. Backend (H2 dev profile, no Postgres needed) — new terminal
 cd src/backend
-./mvnw spring-boot:run -Dspring-boot.run.profiles=dev      # Windows: mvnw.cmd ...
+./mvnw spring-boot:run "-Dspring-boot.run.profiles=dev"     # Windows PowerShell: .\mvnw.cmd spring-boot:run "-Dspring-boot.run.profiles=dev"
 
 # 3. Frontend — new terminal
 cd src/frontend

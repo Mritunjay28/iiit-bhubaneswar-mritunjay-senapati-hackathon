@@ -28,13 +28,13 @@ const DEFAULT_PORTFOLIO = [
 ];
 
 const DEFAULT_SCENARIOS = [
-  { eventType: 'GEOPOLITICAL', scenarioName: 'Geopolitical Crisis', equityShock: -0.12, interestRateShock: 0.0050, creditSpreadShock: 150.0, fxShock: -0.05, commodityShock: 0.15 },
-  { eventType: 'MACROECONOMIC', scenarioName: 'Macro Downturn', equityShock: -0.08, interestRateShock: 0.0200, creditSpreadShock: 100.0, fxShock: -0.03, commodityShock: -0.05 },
-  { eventType: 'CREDIT_EVENT', scenarioName: 'Credit Crunch', equityShock: -0.15, interestRateShock: 0.0100, creditSpreadShock: 250.0, fxShock: -0.02, commodityShock: -0.08 },
-  { eventType: 'MERGER_ACQUISITION', scenarioName: 'M&A Disruption', equityShock: -0.03, interestRateShock: 0.0, creditSpreadShock: 50.0, fxShock: 0.0, commodityShock: 0.0 },
-  { eventType: 'REGULATORY', scenarioName: 'Regulatory Shock', equityShock: -0.06, interestRateShock: 0.0, creditSpreadShock: 75.0, fxShock: -0.01, commodityShock: 0.0 },
-  { eventType: 'EARNINGS', scenarioName: 'Earnings Shock', equityShock: -0.05, interestRateShock: 0.0, creditSpreadShock: 30.0, fxShock: 0.0, commodityShock: 0.0 },
-  { eventType: 'PRODUCT_LAUNCH', scenarioName: 'Market Shift', equityShock: -0.02, interestRateShock: 0.0, creditSpreadShock: 20.0, fxShock: 0.0, commodityShock: 0.0 },
+  { eventType: 'GEOPOLITICAL', scenarioName: 'Geopolitical Crisis', equityShock: -0.12, interestRateShock: 0.0050, creditSpreadShock: 150.0, creditSpreadShockBps: 150.0, fxShock: -0.05, commodityShock: 0.15 },
+  { eventType: 'MACROECONOMIC', scenarioName: 'Macro Downturn', equityShock: -0.08, interestRateShock: 0.0200, creditSpreadShock: 100.0, creditSpreadShockBps: 100.0, fxShock: -0.03, commodityShock: -0.05 },
+  { eventType: 'CREDIT_EVENT', scenarioName: 'Credit Crunch', equityShock: -0.15, interestRateShock: 0.0100, creditSpreadShock: 250.0, creditSpreadShockBps: 250.0, fxShock: -0.02, commodityShock: -0.08 },
+  { eventType: 'MERGER_ACQUISITION', scenarioName: 'M&A Disruption', equityShock: -0.03, interestRateShock: 0.0, creditSpreadShock: 50.0, creditSpreadShockBps: 50.0, fxShock: 0.0, commodityShock: 0.0 },
+  { eventType: 'REGULATORY', scenarioName: 'Regulatory Shock', equityShock: -0.06, interestRateShock: 0.0, creditSpreadShock: 75.0, creditSpreadShockBps: 75.0, fxShock: -0.01, commodityShock: 0.0 },
+  { eventType: 'EARNINGS', scenarioName: 'Earnings Shock', equityShock: -0.05, interestRateShock: 0.0, creditSpreadShock: 30.0, creditSpreadShockBps: 30.0, fxShock: 0.0, commodityShock: 0.0 },
+  { eventType: 'PRODUCT_LAUNCH', scenarioName: 'Market Shift', equityShock: -0.02, interestRateShock: 0.0, creditSpreadShock: 20.0, creditSpreadShockBps: 20.0, fxShock: 0.0, commodityShock: 0.0 },
 ];
 
 const DEFAULT_SIGNALS = [
@@ -215,7 +215,15 @@ export const RiskEngineApi = {
   async getScenarios() {
     try {
       const res = await apiClient.get('/stress-tests/scenarios');
-      return res.data;
+      const list = Array.isArray(res.data) ? res.data : [];
+      return list.map(s => {
+        const spread = s.creditSpreadShock ?? s.creditSpreadShockBps ?? 150.0;
+        return {
+          ...s,
+          creditSpreadShock: spread,
+          creditSpreadShockBps: spread,
+        };
+      });
     } catch {
       return DEFAULT_SCENARIOS;
     }
@@ -223,14 +231,20 @@ export const RiskEngineApi = {
 
   async runStressTest(request) {
     try {
-      const res = await apiClient.post('/stress-tests/run', request);
+      const spread = request.creditSpreadShock ?? request.creditSpreadShockBps ?? 150.0;
+      const normalizedRequest = {
+        ...request,
+        creditSpreadShock: spread,
+        creditSpreadShockBps: spread,
+      };
+      const res = await apiClient.post('/stress-tests/run', normalizedRequest);
       return res.data;
     } catch {
       // High-precision financial fallback calculation
       const scenario = DEFAULT_SCENARIOS.find(s => s.eventType === request.eventType) || DEFAULT_SCENARIOS[0];
       const eqShock = request.equityShock ?? scenario.equityShock;
       const rateShock = request.interestRateShock ?? scenario.interestRateShock;
-      const spreadShock = request.creditSpreadShock ?? scenario.creditSpreadShock;
+      const spreadShock = request.creditSpreadShock ?? request.creditSpreadShockBps ?? scenario.creditSpreadShock ?? 150.0;
       const fxShock = request.fxShock ?? scenario.fxShock;
       const commShock = request.commodityShock ?? scenario.commodityShock;
 
@@ -275,7 +289,9 @@ export const RiskEngineApi = {
           valueBefore: asset.notionalValue,
           valueAfter: Math.round((asset.notionalValue + pnl) * 100) / 100,
           pnlImpact: Math.round(pnl * 100) / 100,
+          shockApplied: Math.round(shockPercent * 100) / 100,
           shockAppliedPercent: Math.round(shockPercent * 100) / 100,
+          percentageChange: Math.round(shockPercent * 100) / 100,
         };
       });
 

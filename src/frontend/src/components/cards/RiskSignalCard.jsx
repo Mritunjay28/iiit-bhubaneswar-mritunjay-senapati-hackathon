@@ -83,7 +83,7 @@ export const RiskSignalCard = ({ signal }) => {
         
         {/* The ONE CTA Repeated */}
         <button
-          onClick={() => navigate('/stress-test')}
+          onClick={() => navigate('/stress-test', { state: { signal } })}
           className={isHighImpact ? 'btn btn-danger' : 'btn btn-outline'}
           style={{ padding: '0.25rem 0.6rem', fontSize: 'var(--text-caption)' }}
           title="Simulate shock test under this event"

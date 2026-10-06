@@ -100,4 +100,8 @@ public class StressTestAssetDetailDto {
     public void setPercentageChange(Double percentageChange) {
         this.percentageChange = percentageChange;
     }
+
+    public Double getShockAppliedPercent() {
+        return shockApplied;
+    }
 }

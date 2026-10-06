@@ -6,7 +6,7 @@ WORKDIR /build
 
 # Copy Maven POM and dependency definitions first for layer caching
 COPY pom.xml .
-RUN mvn dependency:go-offline -B
+RUN mvn dependency:resolve -B
 
 # Copy application source code
 COPY src ./src

@@ -71,6 +71,14 @@ public class StressTestRequestDto {
         this.creditSpreadShockBps = creditSpreadShockBps;
     }
 
+    public Double getCreditSpreadShock() {
+        return creditSpreadShockBps;
+    }
+
+    public void setCreditSpreadShock(Double creditSpreadShock) {
+        this.creditSpreadShockBps = creditSpreadShock;
+    }
+
     public Double getFxShock() {
         return fxShock;
     }

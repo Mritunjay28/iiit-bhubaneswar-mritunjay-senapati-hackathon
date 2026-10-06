@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import {
   Zap,
   BarChart2,
@@ -15,6 +16,9 @@ import { Loader, Spinner } from '../components/common/Loader';
 import { EventBadge, AssetBadge } from '../components/common/Badge';
 
 export const StressTest = () => {
+  const location = useLocation();
+  const targetSignal = location.state?.signal;
+
   const [loading, setLoading] = useState(true);
   const [executing, setExecuting] = useState(false);
   const [scenarios, setScenarios] = useState([]);
@@ -23,6 +27,7 @@ export const StressTest = () => {
     equityShock: -0.12,
     interestRateShock: 0.0050,
     creditSpreadShock: 150.0,
+    creditSpreadShockBps: 150.0,
     fxShock: -0.05,
     commodityShock: 0.15,
   });
@@ -34,26 +39,74 @@ export const StressTest = () => {
       try {
         const scenarioList = await RiskEngineApi.getScenarios();
         setScenarios(scenarioList || []);
-        // Run initial default geopolitical stress test
-        const initialResult = await RiskEngineApi.runStressTest({ eventType: 'GEOPOLITICAL' });
+
+        let defaultEvent = 'GEOPOLITICAL';
+        let defaultScen = scenarioList.find(s => s.eventType === 'GEOPOLITICAL') || scenarioList[0];
+        let overrideName = null;
+
+        if (targetSignal) {
+          defaultEvent = targetSignal.eventType || 'GEOPOLITICAL';
+          defaultScen = scenarioList.find(s => s.eventType === defaultEvent) || scenarioList[0];
+          overrideName = `Signal Impact: ${targetSignal.entity || 'Broad Market'}`;
+        }
+        
+        setSelectedScenario(defaultEvent);
+
+        const spread = defaultScen.creditSpreadShock != null
+          ? defaultScen.creditSpreadShock
+          : (defaultScen.creditSpreadShockBps != null ? defaultScen.creditSpreadShockBps : 150.0);
+
+        setCustomShocks({
+          equityShock: defaultScen.equityShock ?? -0.12,
+          interestRateShock: defaultScen.interestRateShock ?? 0.005,
+          creditSpreadShock: spread,
+          creditSpreadShockBps: spread,
+          fxShock: defaultScen.fxShock ?? -0.05,
+          commodityShock: defaultScen.commodityShock ?? 0.15,
+        });
+
+        // Run initial test based on signal or default
+        const payload = {
+          eventType: defaultEvent,
+          scenarioName: overrideName || defaultScen.scenarioName || defaultEvent,
+          equityShock: defaultScen.equityShock ?? -0.12,
+          interestRateShock: defaultScen.interestRateShock ?? 0.005,
+          creditSpreadShock: spread,
+          creditSpreadShockBps: spread,
+          fxShock: defaultScen.fxShock ?? -0.05,
+          commodityShock: defaultScen.commodityShock ?? 0.15,
+        };
+
+        if (targetSignal?.id) {
+          payload.triggerSignalId = targetSignal.id;
+        }
+
+        const initialResult = await RiskEngineApi.runStressTest(payload);
         setResult(initialResult);
+      } catch (err) {
+        console.error('Failed to initialize stress test:', err);
       } finally {
         setLoading(false);
       }
     };
     init();
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [targetSignal?.id]);
 
   const applyScenarioPreset = (eventType) => {
     setSelectedScenario(eventType);
     const scen = scenarios.find(s => s.eventType === eventType);
     if (scen) {
+      const spread = scen.creditSpreadShock != null
+        ? scen.creditSpreadShock
+        : (scen.creditSpreadShockBps != null ? scen.creditSpreadShockBps : 150.0);
       setCustomShocks({
-        equityShock: scen.equityShock,
-        interestRateShock: scen.interestRateShock,
-        creditSpreadShock: scen.creditSpreadShock,
-        fxShock: scen.fxShock,
-        commodityShock: scen.commodityShock,
+        equityShock: scen.equityShock ?? -0.12,
+        interestRateShock: scen.interestRateShock ?? 0.005,
+        creditSpreadShock: spread,
+        creditSpreadShockBps: spread,
+        fxShock: scen.fxShock ?? -0.05,
+        commodityShock: scen.commodityShock ?? 0.15,
       });
     }
   };
@@ -65,12 +118,34 @@ export const StressTest = () => {
   const handleRunTest = async () => {
     setExecuting(true);
     try {
+      const spread = customShocks.creditSpreadShock != null
+        ? customShocks.creditSpreadShock
+        : (customShocks.creditSpreadShockBps != null ? customShocks.creditSpreadShockBps : 150.0);
+      const scen = scenarios.find(s => s.eventType === selectedScenario);
       const payload = {
         eventType: selectedScenario,
-        ...customShocks,
+        scenarioName: scen?.scenarioName || selectedScenario,
+        equityShock: customShocks.equityShock ?? -0.12,
+        interestRateShock: customShocks.interestRateShock ?? 0.005,
+        creditSpreadShock: spread,
+        creditSpreadShockBps: spread,
+        fxShock: customShocks.fxShock ?? -0.05,
+        commodityShock: customShocks.commodityShock ?? 0.15,
       };
       const res = await RiskEngineApi.runStressTest(payload);
-      setResult(res);
+      if (res) {
+        setResult(res);
+        const isLoss = (res.totalPnlImpact || 0) < 0;
+        const impactText = isLoss ? `drawdown of $${Math.abs(res.totalPnlImpact).toFixed(2)}M` : `gain of $${res.totalPnlImpact.toFixed(2)}M`;
+        await RiskEngineApi.ingestSignal(
+          `Simulated shock: ${res.scenarioName}. Portfolio experienced a ${impactText} (${res.percentageChange}%). Worst hit asset: ${res.worstHitAsset || 'Unknown'}.`,
+          'SYSTEM',
+          'Portfolio Engine'
+        );
+        window.dispatchEvent(new CustomEvent('riskengine:refresh'));
+      }
+    } catch (err) {
+      console.error('Failed to run stress test:', err);
     } finally {
       setExecuting(false);
     }
@@ -214,7 +289,7 @@ export const StressTest = () => {
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <span style={{ fontSize: 'var(--text-overline)', lineHeight: 'var(--leading-none)', letterSpacing: 'var(--tracking-widest)', fontWeight: '700', color: 'var(--text-secondary)', textTransform: 'uppercase' }}>Equity Shock</span>
               <span style={{ fontFamily: 'var(--font-mono)', fontWeight: '800', color: '#ef4444', fontSize: 'var(--text-body-sm)', lineHeight: 'var(--leading-tight)' }}>
-                {(customShocks.equityShock * 100).toFixed(1)}%
+                {(((customShocks.equityShock ?? -0.12)) * 100).toFixed(1)}%
               </span>
             </div>
             <input
@@ -222,8 +297,11 @@ export const StressTest = () => {
               min="-35"
               max="15"
               step="1"
-              value={Math.round(customShocks.equityShock * 100)}
-              onChange={(e) => setCustomShocks({ ...customShocks, equityShock: parseFloat(e.target.value) / 100 })}
+              value={Math.round((customShocks.equityShock ?? -0.12) * 100)}
+              onChange={(e) => {
+                const val = parseFloat(e.target.value) / 100;
+                setCustomShocks(prev => ({ ...prev, equityShock: isNaN(val) ? -0.12 : val }));
+              }}
               className="range-rose"
               style={{ cursor: 'pointer' }}
             />
@@ -238,7 +316,7 @@ export const StressTest = () => {
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <span style={{ fontSize: 'var(--text-overline)', lineHeight: 'var(--leading-none)', letterSpacing: 'var(--tracking-widest)', fontWeight: '700', color: 'var(--text-secondary)', textTransform: 'uppercase' }}>Interest Rate Δ</span>
               <span style={{ fontFamily: 'var(--font-mono)', fontWeight: '800', color: '#0284c7', fontSize: 'var(--text-body-sm)', lineHeight: 'var(--leading-tight)' }}>
-                +{(customShocks.interestRateShock * 10000).toFixed(0)} bps
+                +{(((customShocks.interestRateShock ?? 0.005)) * 10000).toFixed(0)} bps
               </span>
             </div>
             <input
@@ -246,8 +324,11 @@ export const StressTest = () => {
               min="0"
               max="400"
               step="25"
-              value={Math.round(customShocks.interestRateShock * 10000)}
-              onChange={(e) => setCustomShocks({ ...customShocks, interestRateShock: parseFloat(e.target.value) / 10000 })}
+              value={Math.round((customShocks.interestRateShock ?? 0.005) * 10000)}
+              onChange={(e) => {
+                const val = parseFloat(e.target.value) / 10000;
+                setCustomShocks(prev => ({ ...prev, interestRateShock: isNaN(val) ? 0.005 : val }));
+              }}
               className="range-cyan"
               style={{ cursor: 'pointer' }}
             />
@@ -262,7 +343,7 @@ export const StressTest = () => {
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <span style={{ fontSize: 'var(--text-overline)', lineHeight: 'var(--leading-none)', letterSpacing: 'var(--tracking-widest)', fontWeight: '700', color: 'var(--text-secondary)', textTransform: 'uppercase' }}>Credit Spreads</span>
               <span style={{ fontFamily: 'var(--font-mono)', fontWeight: '800', color: '#f59e0b', fontSize: 'var(--text-body-sm)', lineHeight: 'var(--leading-tight)' }}>
-                +{customShocks.creditSpreadShock.toFixed(0)} bps
+                +{Number(customShocks.creditSpreadShock ?? customShocks.creditSpreadShockBps ?? 150).toFixed(0)} bps
               </span>
             </div>
             <input
@@ -270,8 +351,15 @@ export const StressTest = () => {
               min="0"
               max="450"
               step="25"
-              value={customShocks.creditSpreadShock}
-              onChange={(e) => setCustomShocks({ ...customShocks, creditSpreadShock: parseFloat(e.target.value) })}
+              value={Number(customShocks.creditSpreadShock ?? customShocks.creditSpreadShockBps ?? 150)}
+              onChange={(e) => {
+                const val = parseFloat(e.target.value) || 0;
+                setCustomShocks(prev => ({
+                  ...prev,
+                  creditSpreadShock: val,
+                  creditSpreadShockBps: val,
+                }));
+              }}
               className="range-amber"
               style={{ cursor: 'pointer' }}
             />
@@ -286,7 +374,7 @@ export const StressTest = () => {
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <span style={{ fontSize: 'var(--text-overline)', lineHeight: 'var(--leading-none)', letterSpacing: 'var(--tracking-widest)', fontWeight: '700', color: 'var(--text-secondary)', textTransform: 'uppercase' }}>FX Devaluation</span>
               <span style={{ fontFamily: 'var(--font-mono)', fontWeight: '800', color: '#38bdf8', fontSize: 'var(--text-body-sm)', lineHeight: 'var(--leading-tight)' }}>
-                {(customShocks.fxShock * 100).toFixed(1)}%
+                {(((customShocks.fxShock ?? -0.05)) * 100).toFixed(1)}%
               </span>
             </div>
             <input
@@ -294,8 +382,11 @@ export const StressTest = () => {
               min="-20"
               max="15"
               step="2.5"
-              value={Math.round(customShocks.fxShock * 100)}
-              onChange={(e) => setCustomShocks({ ...customShocks, fxShock: parseFloat(e.target.value) / 100 })}
+              value={Math.round((customShocks.fxShock ?? -0.05) * 100)}
+              onChange={(e) => {
+                const val = parseFloat(e.target.value) / 100;
+                setCustomShocks(prev => ({ ...prev, fxShock: isNaN(val) ? -0.05 : val }));
+              }}
               className="range-cyan"
               style={{ cursor: 'pointer' }}
             />
@@ -309,8 +400,8 @@ export const StressTest = () => {
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem', padding: '0.65rem', backgroundColor: '#131418', borderRadius: '6px', border: '1px solid var(--border-subtle)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <span style={{ fontSize: 'var(--text-overline)', lineHeight: 'var(--leading-none)', letterSpacing: 'var(--tracking-widest)', fontWeight: '700', color: 'var(--text-secondary)', textTransform: 'uppercase' }}>Commodity Shock</span>
-              <span style={{ fontFamily: 'var(--font-mono)', fontWeight: '800', color: customShocks.commodityShock >= 0 ? '#10b981' : '#ef4444', fontSize: 'var(--text-body-sm)', lineHeight: 'var(--leading-tight)' }}>
-                {customShocks.commodityShock >= 0 ? '+' : ''}{(customShocks.commodityShock * 100).toFixed(1)}%
+              <span style={{ fontFamily: 'var(--font-mono)', fontWeight: '800', color: (customShocks.commodityShock ?? 0.15) >= 0 ? '#10b981' : '#ef4444', fontSize: 'var(--text-body-sm)', lineHeight: 'var(--leading-tight)' }}>
+                {(customShocks.commodityShock ?? 0.15) >= 0 ? '+' : ''}{(((customShocks.commodityShock ?? 0.15)) * 100).toFixed(1)}%
               </span>
             </div>
             <input
@@ -318,8 +409,11 @@ export const StressTest = () => {
               min="-25"
               max="40"
               step="5"
-              value={Math.round(customShocks.commodityShock * 100)}
-              onChange={(e) => setCustomShocks({ ...customShocks, commodityShock: parseFloat(e.target.value) / 100 })}
+              value={Math.round((customShocks.commodityShock ?? 0.15) * 100)}
+              onChange={(e) => {
+                const val = parseFloat(e.target.value) / 100;
+                setCustomShocks(prev => ({ ...prev, commodityShock: isNaN(val) ? 0.15 : val }));
+              }}
               className="range-emerald"
               style={{ cursor: 'pointer' }}
             />
@@ -377,10 +471,10 @@ export const StressTest = () => {
                 marginTop: '0.15rem',
               }}
             >
-              {isLoss ? '-' : '+'}${Math.abs(result.totalPnlImpact).toFixed(2)}M
+              {isLoss ? '-' : '+'}${Math.abs(result.totalPnlImpact ?? 0).toFixed(2)}M
             </div>
             <div style={{ fontSize: 'var(--text-caption)', lineHeight: 'var(--leading-snug)', letterSpacing: 'var(--tracking-tight)', fontFamily: 'var(--font-mono)', fontWeight: '700', color: isLoss ? '#f87171' : '#34d399' }}>
-              {result.percentageChange >= 0 ? '+' : ''}{result.percentageChange.toFixed(2)}% Drawdown
+              {(result.percentageChange ?? 0) >= 0 ? '+' : ''}{(result.percentageChange ?? 0).toFixed(2)}% Drawdown
             </div>
           </div>
 
@@ -391,10 +485,10 @@ export const StressTest = () => {
             </div>
             <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.5rem', marginTop: '0.25rem' }}>
               <span style={{ fontSize: 'var(--text-body-sm)', lineHeight: 'var(--leading-tight)', letterSpacing: 'var(--tracking-tight)', fontFamily: 'var(--font-mono)', color: 'var(--text-secondary)', textDecoration: 'line-through' }}>
-                ${result.portfolioValueBefore.toFixed(1)}M
+                ${(result.portfolioValueBefore ?? 585.0).toFixed(1)}M
               </span>
               <span style={{ fontSize: 'var(--text-display-md)', lineHeight: 'var(--leading-tight)', letterSpacing: 'var(--tracking-tightest)', fontFamily: 'var(--font-mono)', fontWeight: '800', color: '#38bdf8' }}>
-                → ${result.portfolioValueAfter.toFixed(1)}M
+                → ${(result.portfolioValueAfter ?? 529.56).toFixed(1)}M
               </span>
             </div>
             <div style={{ fontSize: 'var(--text-micro)', lineHeight: 'var(--leading-none)', letterSpacing: 'var(--tracking-wide)', color: 'var(--text-muted)', marginTop: '0.2rem' }}>
@@ -411,7 +505,7 @@ export const StressTest = () => {
               {result.worstHitAsset || 'US Treasury 10Y'}
             </div>
             <div style={{ fontSize: 'var(--text-caption)', lineHeight: 'var(--leading-snug)', letterSpacing: 'var(--tracking-tight)', fontFamily: 'var(--font-mono)', fontWeight: '700', color: '#ef4444', marginTop: '0.15rem' }}>
-              -${Math.abs(result.worstHitAssetPnl || 18.5).toFixed(2)}M PnL Loss
+              -${Math.abs(result.worstHitAssetPnl ?? 18.5).toFixed(2)}M PnL Loss
             </div>
           </div>
 
@@ -421,10 +515,10 @@ export const StressTest = () => {
               Parametric VaR (1-Day)
             </div>
             <div style={{ fontSize: 'var(--text-display-md)', lineHeight: 'var(--leading-tight)', letterSpacing: 'var(--tracking-tightest)', fontFamily: 'var(--font-mono)', fontWeight: '800', color: '#f59e0b', marginTop: '0.25rem' }}>
-              ${(result.valueAtRisk95 || 37.2).toFixed(1)}M <span style={{ fontSize: 'var(--text-caption)', color: 'var(--text-muted)' }}>/ 95%</span>
+              ${(result.valueAtRisk95 ?? 37.2).toFixed(1)}M <span style={{ fontSize: 'var(--text-caption)', color: 'var(--text-muted)' }}>/ 95%</span>
             </div>
             <div style={{ fontSize: 'var(--text-caption)', lineHeight: 'var(--leading-snug)', letterSpacing: 'var(--tracking-tight)', fontFamily: 'var(--font-mono)', color: '#fb923c' }}>
-              ${(result.valueAtRisk99 || 54.7).toFixed(1)}M at 99%
+              ${(result.valueAtRisk99 ?? 54.7).toFixed(1)}M at 99%
             </div>
           </div>
         </div>
@@ -503,11 +597,15 @@ export const StressTest = () => {
               </thead>
               <tbody>
                 {result?.assetDetails?.map((asset, idx) => {
-                  const loss = asset.pnlImpact < 0;
+                  const loss = (asset.pnlImpact ?? 0) < 0;
+                  const shockVal = asset.shockAppliedPercent ?? asset.shockApplied ?? asset.percentageChange ?? 0;
+                  const valBefore = asset.valueBefore ?? asset.notionalValue ?? 0;
+                  const valAfter = asset.valueAfter ?? 0;
+                  const pnlVal = asset.pnlImpact ?? 0;
                   return (
                     <tr
-                      key={asset.assetId || idx}
-                      className={loss && Math.abs(asset.pnlImpact) > 5 ? 'high-impact-row' : ''}
+                      key={asset.assetId || asset.id || idx}
+                      className={loss && Math.abs(pnlVal) > 5 ? 'high-impact-row' : ''}
                     >
                       <td style={{ fontWeight: '700', color: '#ffffff' }}>
                         {asset.assetName}
@@ -519,20 +617,20 @@ export const StressTest = () => {
                         {asset.sector}
                       </td>
                       <td style={{ textAlign: 'right', fontFamily: 'var(--font-mono)', color: 'var(--text-secondary)' }}>
-                        ${asset.valueBefore.toFixed(2)}M
+                        ${valBefore.toFixed(2)}M
                       </td>
                       <td
                         style={{
                           textAlign: 'right',
                           fontFamily: 'var(--font-mono)',
                           fontWeight: '700',
-                          color: asset.shockAppliedPercent >= 0 ? '#10b981' : '#ef4444',
+                          color: shockVal >= 0 ? '#10b981' : '#ef4444',
                         }}
                       >
-                        {asset.shockAppliedPercent >= 0 ? '+' : ''}{asset.shockAppliedPercent.toFixed(2)}%
+                        {shockVal >= 0 ? '+' : ''}{shockVal.toFixed(2)}%
                       </td>
                       <td style={{ textAlign: 'right', fontFamily: 'var(--font-mono)', fontWeight: '700', color: '#38bdf8' }}>
-                        ${asset.valueAfter.toFixed(2)}M
+                        ${valAfter.toFixed(2)}M
                       </td>
                       <td
                         style={{
@@ -542,7 +640,7 @@ export const StressTest = () => {
                           color: loss ? '#ef4444' : '#10b981',
                         }}
                       >
-                        {asset.pnlImpact >= 0 ? '+' : ''}${asset.pnlImpact.toFixed(2)}M
+                        {pnlVal >= 0 ? '+' : ''}${pnlVal.toFixed(2)}M
                       </td>
                     </tr>
                   );

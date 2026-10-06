@@ -32,8 +32,9 @@ public class NlpServiceClient {
     // Resilient Fallback Dictionaries (Loughran-McDonald / Financial Risk Lexicon)
     private static final Set<String> NEGATIVE_WORDS = Set.of(
             "default", "crisis", "recession", "loss", "crash", "downgrade", "collapse",
-            "bankrupt", "inflation", "hike", "war", "conflict", "sanction", "decline",
-            "deficit", "drop", "slump", "fraud", "risk", "warning", "distress", "fail"
+            "bankrupt", "inflation", "hike", "war", "conflict", "sanction", "sanctions", "decline",
+            "deficit", "drop", "slump", "fraud", "risk", "warning", "distress", "fail",
+            "military", "escalation", "embargo", "missile", "strikes", "strike"
     );
 
     private static final Set<String> POSITIVE_WORDS = Set.of(

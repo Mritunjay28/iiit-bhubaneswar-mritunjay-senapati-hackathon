@@ -153,7 +153,10 @@ public class StressTestEngineService {
 
         double equityShock = request.getEquityShock() != null ? request.getEquityShock() : baseScenario.getEquityShock();
         double interestRateShock = request.getInterestRateShock() != null ? request.getInterestRateShock() : baseScenario.getInterestRateShock();
-        double spreadShockBps = request.getCreditSpreadShockBps() != null ? request.getCreditSpreadShockBps() : baseScenario.getCreditSpreadShockBps();
+        Double spreadOverride = request.getCreditSpreadShockBps() != null
+                ? request.getCreditSpreadShockBps()
+                : request.getCreditSpreadShock();
+        double spreadShockBps = spreadOverride != null ? spreadOverride : baseScenario.getCreditSpreadShockBps();
         double fxShock = request.getFxShock() != null ? request.getFxShock() : baseScenario.getFxShock();
         double commodityShock = request.getCommodityShock() != null ? request.getCommodityShock() : baseScenario.getCommodityShock();
 

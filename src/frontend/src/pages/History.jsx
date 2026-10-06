@@ -111,7 +111,7 @@ export const History = () => {
 
           {/* The ONE Repeated CTA */}
           <button
-            onClick={() => navigate('/stress-test')}
+            onClick={() => navigate('/stress-test', { state: { signal: selectedRun ? { eventType: selectedRun.eventType, entity: selectedRun.scenarioName } : null } })}
             className="btn btn-cta"
             style={{ fontSize: 'var(--text-body-sm)', padding: '0.45rem 0.95rem' }}
           >
@@ -194,10 +194,10 @@ export const History = () => {
                           color: isLoss ? '#ef4444' : '#10b981',
                         }}
                       >
-                        {isLoss ? '-' : '+'}${Math.abs(run.totalPnlImpact).toFixed(2)}M
+                        {isLoss ? '-' : '+'}${Math.abs(run.totalPnlImpact ?? 0).toFixed(2)}M
                       </div>
                       <div style={{ fontSize: 'var(--text-caption)', lineHeight: 'var(--leading-snug)', letterSpacing: 'var(--tracking-tight)', fontFamily: 'var(--font-mono)', fontWeight: '700', color: isLoss ? '#f87171' : '#34d399' }}>
-                        {run.percentageChange >= 0 ? '+' : ''}{run.percentageChange.toFixed(2)}%
+                        {(run.percentageChange ?? 0) >= 0 ? '+' : ''}{(run.percentageChange ?? 0).toFixed(2)}%
                       </div>
                     </div>
                     <ChevronRight size={16} color={isSelected ? '#2563eb' : 'var(--text-muted)'} />
@@ -221,7 +221,7 @@ export const History = () => {
 
               {/* The ONE Repeated CTA */}
               <button
-                onClick={() => navigate('/stress-test')}
+                onClick={() => navigate('/stress-test', { state: { signal: selectedRun ? { eventType: selectedRun.eventType, entity: selectedRun.scenarioName } : null } })}
                 className="btn btn-cta"
                 style={{ padding: '0.3rem 0.75rem', fontSize: 'var(--text-caption)' }}
               >
@@ -251,7 +251,7 @@ export const History = () => {
                     Baseline Portfolio
                   </div>
                   <div style={{ fontSize: 'var(--text-h1)', lineHeight: 'var(--leading-tight)', letterSpacing: 'var(--tracking-tightest)', fontWeight: '800', fontFamily: 'var(--font-mono)', color: '#ffffff', marginTop: '0.2rem' }}>
-                    ${selectedRun.portfolioValueBefore.toFixed(1)}M
+                    ${(selectedRun.portfolioValueBefore ?? 585.0).toFixed(1)}M
                   </div>
                 </div>
 
@@ -260,7 +260,7 @@ export const History = () => {
                     Stressed Portfolio
                   </div>
                   <div style={{ fontSize: 'var(--text-h1)', lineHeight: 'var(--leading-tight)', letterSpacing: 'var(--tracking-tightest)', fontWeight: '800', fontFamily: 'var(--font-mono)', color: '#0284c7', marginTop: '0.2rem' }}>
-                    ${selectedRun.portfolioValueAfter.toFixed(1)}M
+                    ${(selectedRun.portfolioValueAfter ?? 541.25).toFixed(1)}M
                   </div>
                 </div>
               </div>
@@ -276,10 +276,10 @@ export const History = () => {
                   Quantitative PnL Drawdown
                 </div>
                 <div style={{ fontSize: 'var(--text-display-lg)', lineHeight: 'var(--leading-tight)', letterSpacing: 'var(--tracking-tightest)', fontWeight: '900', fontFamily: 'var(--font-mono)', color: '#ef4444', marginTop: '0.2rem' }}>
-                  -${Math.abs(selectedRun.totalPnlImpact).toFixed(2)}M
+                  -${Math.abs(selectedRun.totalPnlImpact ?? 0).toFixed(2)}M
                 </div>
                 <div style={{ fontSize: 'var(--text-caption)', lineHeight: 'var(--leading-snug)', letterSpacing: 'var(--tracking-tight)', fontFamily: 'var(--font-mono)', color: '#fda4af', marginTop: '0.1rem' }}>
-                  Erosion: {selectedRun.percentageChange.toFixed(2)}% of notional
+                  Erosion: {(selectedRun.percentageChange ?? 0).toFixed(2)}% of notional
                 </div>
               </div>
 

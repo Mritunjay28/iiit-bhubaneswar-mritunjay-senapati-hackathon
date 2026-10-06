@@ -16,6 +16,13 @@ import json
 import urllib.request
 import urllib.error
 
+# Ensure UTF-8 output encoding on Windows consoles
+if hasattr(sys.stdout, 'reconfigure'):
+    try:
+        sys.stdout.reconfigure(encoding='utf-8')
+    except Exception:
+        pass
+
 BASE_URL = "http://localhost:8080/api"
 
 def make_request(path, method="GET", data=None):
@@ -39,7 +46,10 @@ def log_test(step_num, title, passed, detail=""):
     mark = "\033[92m[PASS]\033[0m" if passed else "\033[91m[FAIL]\033[0m"
     print(f" {mark} Step {step_num}: {title}")
     if detail:
-        print(f"        └─ {detail}")
+        try:
+            print(f"        └─ {detail}")
+        except UnicodeEncodeError:
+            print(f"        |-- {detail}")
 
 def run_smoke_test():
     print("=" * 70)

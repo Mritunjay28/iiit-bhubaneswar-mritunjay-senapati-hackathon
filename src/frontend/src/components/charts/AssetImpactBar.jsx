@@ -30,11 +30,11 @@ const CustomTooltip = ({ active, payload }) => {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem', fontSize: 'var(--text-caption)', lineHeight: 'var(--leading-normal)', letterSpacing: 'var(--tracking-normal)' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', gap: '1rem', color: '#9ca3af' }}>
             <span>Baseline Notional:</span>
-            <span style={{ fontFamily: 'var(--font-mono)', color: '#ffffff' }}>${d.before.toFixed(2)}M</span>
+            <span style={{ fontFamily: 'var(--font-mono)', color: '#ffffff' }}>${(d.before ?? 0).toFixed(2)}M</span>
           </div>
           <div style={{ display: 'flex', justifyContent: 'space-between', gap: '1rem', color: '#9ca3af' }}>
             <span>Stressed Valuation:</span>
-            <span style={{ fontFamily: 'var(--font-mono)', color: '#38bdf8' }}>${d.after.toFixed(2)}M</span>
+            <span style={{ fontFamily: 'var(--font-mono)', color: '#38bdf8' }}>${(d.after ?? 0).toFixed(2)}M</span>
           </div>
           <div style={{ display: 'flex', justifyContent: 'space-between', gap: '1rem', color: '#9ca3af' }}>
             <span>Net PnL Impact:</span>
@@ -42,10 +42,10 @@ const CustomTooltip = ({ active, payload }) => {
               style={{
                 fontFamily: 'var(--font-mono)',
                 fontWeight: '700',
-                color: d.loss >= 0 ? '#10b981' : '#ef4444',
+                color: (d.loss ?? 0) >= 0 ? '#10b981' : '#ef4444',
               }}
             >
-              {d.loss >= 0 ? '+' : ''}${d.loss.toFixed(2)}M ({d.shock.toFixed(1)}%)
+              {(d.loss ?? 0) >= 0 ? '+' : ''}${(d.loss ?? 0).toFixed(2)}M ({(d.shock ?? 0).toFixed(1)}%)
             </span>
           </div>
         </div>
@@ -58,15 +58,18 @@ const CustomTooltip = ({ active, payload }) => {
 export const AssetImpactBar = React.memo(({ assetDetails = [] }) => {
   const data = (assetDetails.length > 0 ? assetDetails : [])
     .slice(0, 10)
-    .map(a => ({
-      name: a.assetName.length > 14 ? a.assetName.substring(0, 14) + '...' : a.assetName,
-      fullName: a.assetName,
-      type: a.assetType,
-      before: a.valueBefore,
-      after: a.valueAfter,
-      loss: a.pnlImpact,
-      shock: a.shockAppliedPercent,
-    }));
+    .map(a => {
+      const shockVal = a.shockAppliedPercent ?? a.shockApplied ?? a.percentageChange ?? 0;
+      return {
+        name: (a.assetName || '').length > 14 ? (a.assetName || '').substring(0, 14) + '...' : (a.assetName || 'Asset'),
+        fullName: a.assetName || 'Asset',
+        type: a.assetType || 'N/A',
+        before: a.valueBefore ?? a.notionalValue ?? 0,
+        after: a.valueAfter ?? 0,
+        loss: a.pnlImpact ?? 0,
+        shock: shockVal,
+      };
+    });
 
   return (
     <div style={{ width: '100%', height: 300 }}>

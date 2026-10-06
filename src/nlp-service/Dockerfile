@@ -4,7 +4,8 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     MODEL_NAME=ProsusAI/finbert \
     DATA_DIR=/app/data \
-    ENVIRONMENT=production
+    ENVIRONMENT=production \
+    PIP_DEFAULT_TIMEOUT=1000
 
 WORKDIR /app
 
@@ -14,6 +15,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 COPY requirements.txt .
 RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir torch --index-url https://download.pytorch.org/whl/cpu && \
     pip install --no-cache-dir -r requirements.txt
 
 # Pre-download FinBERT weights during build if network is available

@@ -165,12 +165,12 @@ export const RiskSignals = () => {
 
           {/* The ONE Repeated CTA */}
           <button
-            onClick={() => navigate('/stress-test')}
+            onClick={() => navigate('/stress-test', { state: { signal: signals.find(s => (s.impactScore || 0) >= 7) } })}
             className="btn btn-cta"
             style={{ fontSize: 'var(--text-body-sm)', padding: '0.45rem 0.95rem' }}
           >
             <Zap size={13} />
-            <span>Simulate Shock</span>
+            <span>Run Full Simulation</span>
           </button>
         </div>
       </div>
@@ -453,7 +453,7 @@ export const RiskSignals = () => {
                   {/* The ONE Repeated CTA */}
                   <td style={{ textAlign: 'right' }}>
                     <button
-                      onClick={() => navigate('/stress-test')}
+                      onClick={() => navigate('/stress-test', { state: { signal } })}
                       className={isHighImpact ? 'btn btn-danger' : 'btn btn-outline'}
                       style={{ padding: '0.3rem 0.65rem', fontSize: 'var(--text-caption)' }}
                       title="Simulate shock scenario for this event"

@@ -16,9 +16,10 @@ FINANCIAL_POSITIVE_LEXICON = {
 FINANCIAL_NEGATIVE_LEXICON = {
     "default": 0.95, "bankruptcy": 0.95, "crisis": 0.9, "recession": 0.85, "inflation": 0.7,
     "downgrade": 0.85, "decline": 0.6, "loss": 0.75, "drop": 0.6, "plunge": 0.85,
-    "slump": 0.75, "crash": 0.9, "sanction": 0.8, "tariffs": 0.7, "war": 0.9,
-    "conflict": 0.8, "investigation": 0.7, "fine": 0.75, "penalty": 0.75, "scrutiny": 0.65,
-    "antitrust": 0.7, "debt": 0.6, "distressed": 0.85, "liquidity": 0.65, "hike": 0.55
+    "slump": 0.75, "crash": 0.9, "sanction": 0.8, "sanctions": 0.85, "tariffs": 0.7, "tariff": 0.7,
+    "war": 0.9, "conflict": 0.8, "investigation": 0.7, "fine": 0.75, "penalty": 0.75, "scrutiny": 0.65,
+    "antitrust": 0.7, "debt": 0.6, "distressed": 0.85, "liquidity": 0.65, "hike": 0.55,
+    "military": 0.8, "escalation": 0.85, "embargo": 0.85, "missile": 0.85, "strikes": 0.8, "strike": 0.75
 }
 
 

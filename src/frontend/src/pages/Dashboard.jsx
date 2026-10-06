@@ -72,7 +72,7 @@ export const Dashboard = () => {
         <KpiCard
           className="scroll-reveal reveal-delay-1"
           title="Total Portfolio Notional"
-          value={`$${(portfolioSummary?.totalNotionalValue || 585.0).toFixed(1)}M`}
+          value={`$${(portfolioSummary?.totalNotionalValue ?? portfolioSummary?.totalNotional ?? 585.0).toFixed(1)}M`}
           subtitle="15 Multi-Asset Positions"
           change="100% Allocated"
           changeType="positive"
@@ -96,7 +96,10 @@ export const Dashboard = () => {
         <KpiCard
           className="scroll-reveal reveal-delay-3"
           title="FinBERT Sentiment Index"
-          value={(stats?.avgSentimentScore || -0.28) > 0 ? `+${(stats?.avgSentimentScore || -0.28).toFixed(2)}` : (stats?.avgSentimentScore || -0.28).toFixed(2)}
+          value={(() => {
+            const val = stats?.avgSentimentScore ?? stats?.averageSentiment ?? -0.28;
+            return val > 0 ? `+${val.toFixed(2)}` : val.toFixed(2);
+          })()}
           subtitle="Scale: -1.0 to +1.0 Polarity"
           change="Bearish Tilt"
           changeType="negative"
@@ -172,7 +175,7 @@ export const Dashboard = () => {
 
         {/* The ONE Repeated CTA */}
         <button
-          onClick={() => navigate('/stress-test')}
+          onClick={() => navigate('/stress-test', { state: { signal: signals.find(s => (s.impactScore || 0) >= 7) } })}
           className="btn btn-cta"
           style={{ padding: '0.55rem 1.15rem' }}
         >
