@@ -70,6 +70,7 @@ lerna-debug.log*
 Thumbs.db
 ehthumbs.db
 [Dd]esktop.ini
+~$*
 
 # Environment variables & local secrets
 .env
@@ -85,7 +86,6 @@ submission_guideline*.txt
 project_plan.md
 presentation.md
 presentation.ppt
-presentation.pdf
 demo_walkthrough_guide.md
 
 # Docker

@@ -4,7 +4,7 @@
 **College Email ID:** b224030@iiit-bh.ac.in  
 **College / Campus:** IIIT Bhubaneswar  
 **Demo Video Link:** _TODO: add YouTube (Unlisted) link_  
-**Slide Deck Link (if hosted externally):** Not hosted externally — see [docs/presentation.pptx](docs/presentation.pptx) (7 slides)
+**Slide Deck Link (if hosted externally):** Not hosted externally — see [docs/presentation.pdf](docs/presentation.pdf) (7 slides)
 
 ---
 
