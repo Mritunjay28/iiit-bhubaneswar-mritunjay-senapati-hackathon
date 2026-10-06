@@ -4,7 +4,7 @@
 **College Email ID:** b224030@iiit-bh.ac.in  
 **College / Campus:** IIIT Bhubaneswar  
 **Demo Video Link:** _TODO: add YouTube (Unlisted) link_  
-**Slide Deck Link (if hosted externally):** Not hosted externally — see [docs/presentation.pdf](docs/presentation.pdf) (7 slides)
+**Slide Deck Link (if hosted externally):** Included in repository — [View PDF](docs/presentation.pdf) ([Direct / Raw Link](https://raw.githubusercontent.com/Mritunjay28/iiit-bhubaneswar-mritunjay-senapati-hackathon/main/docs/presentation.pdf)) · [Slide Gallery](docs/SLIDES.md) · [PowerPoint (.pptx)](docs/presentation.pptx)
 
 ---
 
@@ -89,8 +89,8 @@ All data is **synthetic or publicly available**. No proprietary or client data i
 
 ### Option A — Docker Compose (recommended)
 ```bash
-git clone <your-repo-url>
-cd <repo-folder>
+git clone https://github.com/Mritunjay28/iiit-bhubaneswar-mritunjay-senapati-hackathon.git
+cd iiit-bhubaneswar-mritunjay-senapati-hackathon
 docker compose up --build
 ```
 - Dashboard: http://localhost:5173
