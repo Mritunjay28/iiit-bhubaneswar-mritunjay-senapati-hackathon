@@ -71,7 +71,7 @@ All data is **synthetic or publicly available**. No proprietary or client data i
 | # | Assumption | Rationale |
 |:---:|---|---|
 | **A1** | Auto-trigger a stress test when `impactScore >= 7` | Only high-severity signals cause automatic action, which limits noise |
-| **A2** | Impact Score is an integer 1–10: `round((0.35·|sentiment| + 0.35·severity + 0.30·source_weight) × 10 × (0.85 + 0.15·confidence))` | Explainable and auditable. Severity weights: Geopolitical 0.90, Credit 0.85, Macro 0.80, Regulatory 0.60, M&A 0.50, Earnings 0.40, Product 0.30 |
+| **A2** | Impact Score is an integer 1–10: `clamp(round((0.35·|sentiment| + 0.35·severity + 0.30·source_weight) × 10), 1, 10)` | Explainable multi-factor formula: 35% sentiment magnitude, 35% event severity, 30% source credibility. Severity weights: Geopolitical 0.90, Credit 0.85, Macro 0.80, Regulatory 0.60, M&A 0.50, Earnings 0.40, Product 0.30. Modulated by model confidence factor `(0.85 + 0.15·confidence)` when available. |
 | **A3** | Sentiment = `P(positive) − P(negative)` in `[-1, +1]` | Standard FinBERT output. A financial-lexicon fallback is used if the model can't be loaded (e.g. offline) |
 | **A4** | Valuation is notional-based | Keeps scope manageable while preserving portfolio-level attribution |
 | **A5** | 7 predefined scenarios mapped 1:1 to event types | Deterministic, reproducible results; custom shocks are possible via `POST /api/stress-tests/run` |

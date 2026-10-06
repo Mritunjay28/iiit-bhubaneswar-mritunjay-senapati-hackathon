@@ -314,10 +314,10 @@ public class NlpServiceClient {
             case "GEOPOLITICAL" -> 0.90;
             case "CREDIT_EVENT" -> 0.85;
             case "MACROECONOMIC" -> 0.80;
-            case "REGULATORY" -> 0.70;
-            case "MERGER_ACQUISITION" -> 0.60;
-            case "EARNINGS" -> 0.50;
-            case "PRODUCT_LAUNCH" -> 0.40;
+            case "REGULATORY" -> 0.60;
+            case "MERGER_ACQUISITION" -> 0.50;
+            case "EARNINGS" -> 0.40;
+            case "PRODUCT_LAUNCH" -> 0.30;
             default -> 0.50;
         };
 
