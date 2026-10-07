@@ -60,7 +60,7 @@ public class DataSeeder implements CommandLineRunner {
 
         // 1. Seed Portfolio Assets if empty
         if (portfolioAssetRepository.count() == 0) {
-            logger.info("Portfolio table is empty. Seeding $520M synthetic portfolio assets...");
+            logger.info("Portfolio table is empty. Seeding $585M synthetic portfolio assets...");
             portfolioService.seedSyntheticPortfolio();
         } else {
             logger.info("Portfolio already populated with {} assets.", portfolioAssetRepository.count());

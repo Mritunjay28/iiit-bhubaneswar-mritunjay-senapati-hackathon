@@ -27,6 +27,10 @@ public class SignalStatsDto {
         return triggeredStressTests;
     }
 
+    public long getHighImpactCount() {
+        return triggeredStressTests;
+    }
+
     public void setTriggeredStressTests(long triggeredStressTests) {
         this.triggeredStressTests = triggeredStressTests;
     }

@@ -133,7 +133,7 @@ def run_smoke_test():
     step7_pass = status_code == 200 and data.get("totalSignals", 0) > 0
     all_passed = all_passed and step7_pass
     log_test(7, "Risk Signal Statistical Telemetry", step7_pass,
-             f"Total Processed Signals: {data.get('totalSignals')} | High Impact: {data.get('highImpactCount')}")
+             f"Total Processed Signals: {data.get('totalSignals')} | High Impact: {data.get('highImpactCount', data.get('triggeredStressTests', 0))}")
 
     print("=" * 70)
     if all_passed:
