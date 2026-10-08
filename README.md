@@ -3,7 +3,7 @@
 **Candidate Name:** Mritunjay Senapati  
 **College Email ID:** b224030@iiit-bh.ac.in  
 **College / Campus:** IIIT Bhubaneswar  
-**Demo Video Link:** _TODO: add YouTube (Unlisted) link_  
+**Demo Video Link:** [video link](https://youtu.be/0JS0LGj4u5c)
 **Slide Deck Link (if hosted externally):** Included in repository — [View PDF](docs/presentation.pdf) If Not render then ([Direct / Raw Link](https://raw.githubusercontent.com/Mritunjay28/iiit-bhubaneswar-mritunjay-senapati-hackathon/main/docs/presentation.pdf)) · [Slide Gallery](docs/SLIDES.md) · [PowerPoint (.pptx)](docs/presentation.pptx)
 
 ---
