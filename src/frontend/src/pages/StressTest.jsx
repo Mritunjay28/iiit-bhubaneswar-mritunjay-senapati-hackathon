@@ -20,6 +20,7 @@ export const StressTest = () => {
   const targetSignal = location.state?.signal;
 
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [executing, setExecuting] = useState(false);
   const [scenarios, setScenarios] = useState([]);
   const [selectedScenario, setSelectedScenario] = useState('GEOPOLITICAL');
@@ -37,6 +38,7 @@ export const StressTest = () => {
   useEffect(() => {
     const init = async () => {
       try {
+        setError(null);
         const scenarioList = await RiskEngineApi.getScenarios();
         setScenarios(scenarioList || []);
 
@@ -85,6 +87,7 @@ export const StressTest = () => {
         setResult(initialResult);
       } catch (err) {
         console.error('Failed to initialize stress test:', err);
+        setError("Backend unreachable");
       } finally {
         setLoading(false);
       }
@@ -163,6 +166,11 @@ export const StressTest = () => {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+      {error && (
+        <div style={{ padding: '1rem', backgroundColor: 'rgba(239, 68, 68, 0.1)', border: '1px solid #ef4444', color: '#ef4444', borderRadius: '6px', textAlign: 'center', fontWeight: 'bold' }}>
+          {error}
+        </div>
+      )}
       {/* Top Header & Overview */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem' }}>
         <div>
@@ -233,7 +241,9 @@ export const StressTest = () => {
             onChange={handleScenarioChange}
             className="input-control"
             style={{ width: '260px', fontWeight: '600' }}
+            disabled={scenarios.length === 0}
           >
+            {scenarios.length === 0 && <option value="">No scenarios available</option>}
             {scenarios.map(s => (
               <option key={s.eventType} value={s.eventType}>
                 {s.scenarioName} ({s.eventType})
@@ -556,7 +566,7 @@ export const StressTest = () => {
 
           <span style={{ fontSize: 'var(--text-micro)', lineHeight: 'var(--leading-none)', letterSpacing: 'var(--tracking-wide)', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
             <Activity size={13} color="#2563eb" />
-            Executed: {result?.executedAt ? new Date(result.executedAt).toLocaleTimeString() : 'Live'}
+            Executed: {result ? (result.executedAt ? new Date(result.executedAt).toLocaleTimeString() : 'Live') : '--'}
           </span>
         </div>
 

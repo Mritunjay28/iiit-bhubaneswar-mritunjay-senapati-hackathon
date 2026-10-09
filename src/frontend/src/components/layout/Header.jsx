@@ -41,7 +41,7 @@ export const Header = () => {
     <>
       {status.status === 'OFFLINE' && (
         <div style={{ backgroundColor: '#ef4444', color: 'white', padding: '0.5rem', textAlign: 'center', fontSize: '14px', fontWeight: 'bold' }}>
-          Backend offline. Displaying fallback synthetic data.
+          Backend offline.
         </div>
       )}
     <header

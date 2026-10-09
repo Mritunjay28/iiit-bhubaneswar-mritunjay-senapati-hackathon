@@ -19,6 +19,7 @@ import { RiskEngineApi } from '../services/api';
 export const Dashboard = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [signals, setSignals] = useState([]);
   const [stats, setStats] = useState(null);
   const [portfolioSummary, setPortfolioSummary] = useState(null);
@@ -26,6 +27,7 @@ export const Dashboard = () => {
 
   const loadData = async () => {
     try {
+      setError(null);
       const [signalsData, statsData, summaryData] = await Promise.all([
         RiskEngineApi.getLatestSignals(),
         RiskEngineApi.getSignalStats(),
@@ -34,6 +36,8 @@ export const Dashboard = () => {
       setSignals(signalsData || []);
       setStats(statsData || {});
       setPortfolioSummary(summaryData || {});
+    } catch (err) {
+      setError("Backend unreachable");
     } finally {
       setLoading(false);
     }
@@ -61,6 +65,11 @@ export const Dashboard = () => {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+      {error && (
+        <div style={{ padding: '1rem', backgroundColor: 'rgba(239, 68, 68, 0.1)', border: '1px solid #ef4444', color: '#ef4444', borderRadius: '6px', textAlign: 'center', fontWeight: 'bold' }}>
+          {error}
+        </div>
+      )}
       {/* KPI Cards Row (Styled like Reference 1 Taskos, Ref 2 Klips, Ref 4 Cash Balance) */}
       <div
         style={{
@@ -72,7 +81,7 @@ export const Dashboard = () => {
         <KpiCard
           className="scroll-reveal reveal-delay-1"
           title="Total Portfolio Notional"
-          value={`$${(portfolioSummary?.totalNotionalValue ?? portfolioSummary?.totalNotional ?? 585.0).toFixed(1)}M`}
+          value={portfolioSummary?.totalNotionalValue ?? portfolioSummary?.totalNotional ? `$${(portfolioSummary?.totalNotionalValue ?? portfolioSummary?.totalNotional).toFixed(1)}M` : '--'}
           subtitle="15 Multi-Asset Positions"
           change="100% Allocated"
           changeType="positive"
@@ -97,7 +106,8 @@ export const Dashboard = () => {
           className="scroll-reveal reveal-delay-3"
           title="FinBERT Sentiment Index"
           value={(() => {
-            const val = stats?.avgSentimentScore ?? stats?.averageSentiment ?? -0.28;
+            const val = stats?.avgSentimentScore ?? stats?.averageSentiment;
+            if (val == null) return '--';
             return val > 0 ? `+${val.toFixed(2)}` : val.toFixed(2);
           })()}
           subtitle="Scale: -1.0 to +1.0 Polarity"
@@ -111,7 +121,7 @@ export const Dashboard = () => {
         <KpiCard
           className="scroll-reveal reveal-delay-4"
           title="1-Day Parametric VaR (95%)"
-          value="$37.2M"
+          value={stats?.valueAtRisk95 ? `$${stats.valueAtRisk95}M` : '--'}
           subtitle="Crisis Horizon Loss Boundary"
           change="-6.36% Cap"
           changeType="negative"

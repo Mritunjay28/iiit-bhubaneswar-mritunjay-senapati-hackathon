@@ -17,17 +17,21 @@ import { Loader } from '../components/common/Loader';
 export const History = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [history, setHistory] = useState([]);
   const [selectedRun, setSelectedRun] = useState(null);
 
   const loadHistory = async () => {
     try {
+      setError(null);
       const data = await RiskEngineApi.getHistoricalStressTests();
       const list = data?.content || [];
       setHistory(list);
       if (list.length > 0) {
         setSelectedRun(list[0]);
       }
+    } catch (err) {
+      setError("Backend unreachable");
     } finally {
       setLoading(false);
     }
@@ -50,6 +54,11 @@ export const History = () => {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+      {error && (
+        <div style={{ padding: '1rem', backgroundColor: 'rgba(239, 68, 68, 0.1)', border: '1px solid #ef4444', color: '#ef4444', borderRadius: '6px', textAlign: 'center', fontWeight: 'bold' }}>
+          {error}
+        </div>
+      )}
       {/* Top Header & Summary Stats */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem' }}>
         <div>

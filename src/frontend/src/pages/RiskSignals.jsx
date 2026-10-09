@@ -25,6 +25,7 @@ const SAMPLE_PROMPTS = [
 export const RiskSignals = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [signals, setSignals] = useState([]);
   const [eventTypeFilter, setEventTypeFilter] = useState('ALL');
   const [sourceFilter, setSourceFilter] = useState('ALL');
@@ -37,8 +38,11 @@ export const RiskSignals = () => {
 
   const loadSignals = async () => {
     try {
+      setError(null);
       const data = await RiskEngineApi.getSignals();
       setSignals(data?.content || []);
+    } catch (err) {
+      setError("Backend unreachable");
     } finally {
       setLoading(false);
     }
@@ -117,6 +121,11 @@ export const RiskSignals = () => {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+      {error && (
+        <div style={{ padding: '1rem', backgroundColor: 'rgba(239, 68, 68, 0.1)', border: '1px solid #ef4444', color: '#ef4444', borderRadius: '6px', textAlign: 'center', fontWeight: 'bold' }}>
+          {error}
+        </div>
+      )}
       {/* Top Header & Ingestion Buttons */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem' }}>
         <div>

@@ -27,6 +27,7 @@ const SECTOR_BAR_COLORS = [
 export const Portfolio = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [assets, setAssets] = useState([]);
   const [summary, setSummary] = useState(null);
   const [activeType, setActiveType] = useState('ALL');
@@ -36,12 +37,15 @@ export const Portfolio = () => {
 
   const loadData = async () => {
     try {
+      setError(null);
       const [assetsData, summaryData] = await Promise.all([
         RiskEngineApi.getPortfolio(),
         RiskEngineApi.getPortfolioSummary(),
       ]);
       setAssets(assetsData || []);
       setSummary(summaryData || {});
+    } catch (err) {
+      setError("Backend unreachable");
     } finally {
       setLoading(false);
     }
@@ -79,29 +83,21 @@ export const Portfolio = () => {
 
   const assetTypeChartData = summary?.notionalByType
     ? Object.entries(summary.notionalByType).map(([name, value]) => ({ name, value }))
-    : [
-        { name: 'BOND', value: 220.0 },
-        { name: 'DERIVATIVE', value: 180.0 },
-        { name: 'LOAN', value: 110.0 },
-        { name: 'EQUITY', value: 75.0 },
-      ];
+    : [];
 
   const sectorChartData = summary?.notionalBySector
     ? Object.entries(summary.notionalBySector).map(([name, value]) => ({ name, value }))
-    : [
-        { name: 'Government', value: 145.0 },
-        { name: 'Banking', value: 140.0 },
-        { name: 'Index', value: 75.0 },
-        { name: 'Technology', value: 63.0 },
-        { name: 'EM Sovereign', value: 45.0 },
-        { name: 'FX', value: 40.0 },
-        { name: 'Commodity', value: 35.0 },
-      ];
+    : [];
 
-  const totalNotional = summary?.totalNotional || 585.0;
+  const totalNotional = summary?.totalNotional ?? '--';
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+      {error && (
+        <div style={{ padding: '1rem', backgroundColor: 'rgba(239, 68, 68, 0.1)', border: '1px solid #ef4444', color: '#ef4444', borderRadius: '6px', textAlign: 'center', fontWeight: 'bold' }}>
+          {error}
+        </div>
+      )}
       {/* Portfolio Top Bar with Reset Action & The ONE CTA */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem' }}>
         <div>
@@ -160,7 +156,7 @@ export const Portfolio = () => {
             Total Portfolio Notional
           </div>
           <div style={{ fontSize: 'var(--text-display-lg)', lineHeight: 'var(--leading-tight)', letterSpacing: 'var(--tracking-tightest)', fontWeight: '900', fontFamily: 'var(--font-mono)', color: '#ffffff', marginTop: '0.2rem' }}>
-            ${totalNotional.toFixed(1)}M
+            {totalNotional !== '--' ? `$${totalNotional.toFixed(1)}M` : '--'}
           </div>
           <div style={{ fontSize: 'var(--text-caption)', lineHeight: 'var(--leading-snug)', letterSpacing: 'var(--tracking-normal)', color: '#93c5fd', marginTop: '0.15rem' }}>
             15 institutional positions
@@ -172,7 +168,7 @@ export const Portfolio = () => {
             Fixed Income Allocation
           </div>
           <div style={{ fontSize: 'var(--text-display-lg)', lineHeight: 'var(--leading-tight)', letterSpacing: 'var(--tracking-tightest)', fontWeight: '900', fontFamily: 'var(--font-mono)', color: '#bfdbfe', marginTop: '0.2rem' }}>
-            $220.0M
+            {summary?.notionalByType?.BOND != null ? `$${summary.notionalByType.BOND}M` : '--'}
           </div>
           <div style={{ fontSize: 'var(--text-caption)', lineHeight: 'var(--leading-snug)', letterSpacing: 'var(--tracking-normal)', color: 'var(--text-secondary)', marginTop: '0.15rem' }}>
             Govt & corporate duration
@@ -184,7 +180,7 @@ export const Portfolio = () => {
             Corporate & EM Loans
           </div>
           <div style={{ fontSize: 'var(--text-display-lg)', lineHeight: 'var(--leading-tight)', letterSpacing: 'var(--tracking-tightest)', fontWeight: '900', fontFamily: 'var(--font-mono)', color: '#6ee7b7', marginTop: '0.2rem' }}>
-            $110.0M
+            {summary?.notionalByType?.LOAN != null ? `$${summary.notionalByType.LOAN}M` : '--'}
           </div>
           <div style={{ fontSize: 'var(--text-caption)', lineHeight: 'var(--leading-snug)', letterSpacing: 'var(--tracking-normal)', color: 'var(--text-secondary)', marginTop: '0.15rem' }}>
             Subject to spread widening
@@ -196,7 +192,7 @@ export const Portfolio = () => {
             Derivatives & Equity
           </div>
           <div style={{ fontSize: 'var(--text-display-lg)', lineHeight: 'var(--leading-tight)', letterSpacing: 'var(--tracking-tightest)', fontWeight: '900', fontFamily: 'var(--font-mono)', color: '#7dd3fc', marginTop: '0.2rem' }}>
-            $255.0M
+            {summary?.notionalByType?.DERIVATIVE != null && summary?.notionalByType?.EQUITY != null ? `$${summary.notionalByType.DERIVATIVE + summary.notionalByType.EQUITY}M` : '--'}
           </div>
           <div style={{ fontSize: 'var(--text-caption)', lineHeight: 'var(--leading-snug)', letterSpacing: 'var(--tracking-normal)', color: 'var(--text-secondary)', marginTop: '0.15rem' }}>
             Convexity & beta sensitivity
