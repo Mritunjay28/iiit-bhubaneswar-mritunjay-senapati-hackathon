@@ -54,13 +54,13 @@ export const RiskEngineApi = {
       return res.data;
     } catch {
       return {
-        status: 'ONLINE',
+        status: 'OFFLINE',
         environment: 'production',
         assetCount: 15,
         signalCount: DEFAULT_SIGNALS.length,
         stressTestCount: 4,
         totalPortfolioNotional: 585.0,
-        nlpServiceOnline: true,
+        nlpServiceOnline: false,
         nlpServiceUrl: 'http://nlp-service:8000',
         timestamp: new Date().toISOString(),
       };

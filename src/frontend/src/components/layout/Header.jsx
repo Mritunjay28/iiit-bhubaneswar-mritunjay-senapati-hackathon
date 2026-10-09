@@ -38,6 +38,12 @@ export const Header = () => {
   const page = getPageTitle(location.pathname);
 
   return (
+    <>
+      {status.status === 'OFFLINE' && (
+        <div style={{ backgroundColor: '#ef4444', color: 'white', padding: '0.5rem', textAlign: 'center', fontSize: '14px', fontWeight: 'bold' }}>
+          Backend offline. Displaying fallback synthetic data.
+        </div>
+      )}
     <header
       style={{
         height: '68px',
@@ -131,5 +137,6 @@ export const Header = () => {
         </button>
       </div>
     </header>
+    </>
   );
 };

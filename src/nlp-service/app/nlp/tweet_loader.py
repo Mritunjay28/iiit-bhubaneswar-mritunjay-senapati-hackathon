@@ -35,6 +35,7 @@ class TweetLoader:
             data_dir / "tweets.csv",
             Path("data/sample_tweets.csv"),
             Path("../data/sample_tweets.csv"),
+            Path("../../data/sample_tweets.csv"),
             Path("/app/data/sample_tweets.csv"),
             Path("/app/data/tweets.csv")
         ]

@@ -148,6 +148,13 @@ public class StressTestEngineService {
         ShockScenarioDto baseScenario = getScenario(eventType);
 
         // Apply parameter overrides if present, otherwise default to baseline scenario
+        if (request.getScenarioName() != null && !request.getScenarioName().isBlank()) {
+            boolean isKnown = scenarioRegistry.values().stream()
+                    .anyMatch(s -> s.getScenarioName().equals(request.getScenarioName()));
+            if (!isKnown) {
+                throw new org.springframework.web.server.ResponseStatusException(org.springframework.http.HttpStatus.BAD_REQUEST, "Unknown scenario name: " + request.getScenarioName());
+            }
+        }
         String scenarioName = (request.getScenarioName() != null && !request.getScenarioName().isBlank())
                 ? request.getScenarioName() : baseScenario.getScenarioName();
 

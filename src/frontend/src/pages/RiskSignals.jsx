@@ -66,10 +66,10 @@ export const RiskSignals = () => {
 
   const handleFetchTweets = async () => {
     setIngesting(true);
-    setStatusMessage('Streaming Kaggle financial tweets batch into FinBERT NLP pipeline...');
+    setStatusMessage('Streaming sample financial tweets batch into FinBERT NLP pipeline...');
     try {
       const newItems = await RiskEngineApi.fetchTweets();
-      setStatusMessage(`Ingested ${newItems.length} tweets from Kaggle dataset.`);
+      setStatusMessage(`Ingested ${newItems.length} tweets from sample dataset.`);
       await loadSignals();
     } finally {
       setIngesting(false);
@@ -151,7 +151,7 @@ export const RiskSignals = () => {
             style={{ fontSize: 'var(--text-body-sm)', padding: '0.45rem 0.75rem' }}
           >
             {ingesting ? <Spinner size={13} color="#60a5fa" /> : <MessageSquare size={13} color="#60a5fa" />}
-            <span>Load Kaggle Tweets</span>
+            <span>Load Sample Tweets</span>
           </button>
 
           <button

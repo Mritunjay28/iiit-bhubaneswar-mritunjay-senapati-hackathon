@@ -5,8 +5,8 @@
 - **Candidate Name:** Mritunjay Senapati
 - **College Email ID:** b224030@iiit-bh.ac.in
 - **College / Campus:** IIIT Bhubaneswar
-- **Direct PDF Download:** [`docs/presentation.pdf`](presentation.pdf)
-- **PowerPoint File:** [`docs/presentation.pptx`](presentation.pptx)
+- **Presentation PDF:** [presentation.pdf](presentation.pdf)
+- **Presentation PPTX:** [presentation.pptx](presentation.pptx)
 
 ---
 
