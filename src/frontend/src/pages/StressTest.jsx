@@ -67,23 +67,8 @@ export const StressTest = () => {
           commodityShock: defaultScen.commodityShock ?? 0.15,
         });
 
-        // Run initial test based on signal or default
-        const payload = {
-          eventType: defaultEvent,
-          scenarioName: overrideName || defaultScen.scenarioName || defaultEvent,
-          equityShock: defaultScen.equityShock ?? -0.12,
-          interestRateShock: defaultScen.interestRateShock ?? 0.005,
-          creditSpreadShock: spread,
-          creditSpreadShockBps: spread,
-          fxShock: defaultScen.fxShock ?? -0.05,
-          commodityShock: defaultScen.commodityShock ?? 0.15,
-        };
-
-        if (targetSignal?.id) {
-          payload.triggerSignalId = targetSignal.id;
-        }
-
-        const initialResult = await RiskEngineApi.runStressTest(payload);
+        // Fetch the latest existing test instead to populate the dashboard.
+        const initialResult = await RiskEngineApi.getLatestStressTest();
         setResult(initialResult);
       } catch (err) {
         console.error('Failed to initialize stress test:', err);

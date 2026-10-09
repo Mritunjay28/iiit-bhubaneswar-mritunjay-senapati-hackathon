@@ -27,6 +27,7 @@ export const RiskSignals = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [signals, setSignals] = useState([]);
+  const [totalSignals, setTotalSignals] = useState(0);
   const [eventTypeFilter, setEventTypeFilter] = useState('ALL');
   const [sourceFilter, setSourceFilter] = useState('ALL');
   const [impactFilter, setImpactFilter] = useState('ALL');
@@ -41,6 +42,7 @@ export const RiskSignals = () => {
       setError(null);
       const data = await RiskEngineApi.getSignals();
       setSignals(data?.content || []);
+      setTotalSignals(data?.totalElements || (data?.content || []).length);
     } catch (err) {
       setError("Backend unreachable");
     } finally {
@@ -398,7 +400,7 @@ export const RiskSignals = () => {
       <div className="institutional-card scroll-reveal" style={{ padding: '1.25rem', overflowX: 'auto' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.65rem', padding: '0 0.25rem' }}>
           <span style={{ fontSize: 'var(--text-caption)', lineHeight: 'var(--leading-none)', letterSpacing: 'var(--tracking-normal)', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
-            Showing {filteredSignals.length} of {signals.length} Signals
+            Showing {filteredSignals.length} of {totalSignals} Signals
           </span>
           <span style={{ fontSize: 'var(--text-caption)', lineHeight: 'var(--leading-none)', letterSpacing: 'var(--tracking-normal)', color: 'var(--text-muted)' }}>
             * Signals with Impact ≥ 7 trigger Module B auto-stress simulation

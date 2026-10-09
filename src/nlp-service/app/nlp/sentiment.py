@@ -48,7 +48,7 @@ class SentimentAnalyzer:
                 "sentiment-analysis",
                 model=self.model_name,
                 tokenizer=self.model_name,
-                return_all_scores=True,
+                top_k=None,
                 device=device,
                 truncation=True,
                 max_length=512
@@ -85,7 +85,9 @@ class SentimentAnalyzer:
         if self.is_loaded and not self.is_fallback and self.pipe is not None:
             try:
                 # Truncate text to 512 chars/tokens for safety
-                raw_results = self.pipe(text[:512])[0]
+                raw_results = self.pipe(text[:512], top_k=None)
+                if isinstance(raw_results, list) and len(raw_results) > 0 and isinstance(raw_results[0], list):
+                    raw_results = raw_results[0]
                 # FinBERT returns labels: positive, negative, neutral
                 scores = {r["label"].lower(): float(r["score"]) for r in raw_results}
                 pos = scores.get("positive", 0.0)
@@ -121,7 +123,7 @@ class SentimentAnalyzer:
         if self.is_loaded and not self.is_fallback and self.pipe is not None:
             try:
                 truncated_texts = [t[:512] if t else "" for t in texts]
-                batch_results = self.pipe(truncated_texts, batch_size=16)
+                batch_results = self.pipe(truncated_texts, batch_size=16, top_k=None)
                 outputs = []
                 for res in batch_results:
                     scores = {r["label"].lower(): float(r["score"]) for r in res}

@@ -61,7 +61,7 @@ public class RiskOrchestrationService {
         }
 
         int impactScore = analysis.getImpactScore();
-        boolean shouldTrigger = impactScore >= highImpactThreshold;
+        boolean shouldTrigger = impactScore >= highImpactThreshold && !"SYSTEM".equalsIgnoreCase(effectiveSource);
 
         String extractedEntity = entity;
         if ((extractedEntity == null || extractedEntity.isBlank()) && analysis.getEntities() != null && !analysis.getEntities().isEmpty()) {

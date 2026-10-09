@@ -34,9 +34,11 @@ class GdeltFetcher:
         Falls back to curated sample_news.json if GDELT API is unreachable.
         """
         raw_articles = self._fetch_gdelt_raw(query, days, max_records)
+        source_name = "GDELT"
         if not raw_articles:
             logger.info("Using local curated news data as fallback for query '%s'...", query)
             raw_articles = self._load_fallback_news(max_records)
+            source_name = "SAMPLE DATA"
 
         analyzed: List[AnalysisResponse] = []
         for item in raw_articles:
@@ -58,7 +60,7 @@ class GdeltFetcher:
             impact_score = impact_calculator.calculate(
                 sentiment_score=sent_score,
                 event_type=event_type,
-                source="GDELT",
+                source=source_name,
                 confidence=confidence
             )
 
@@ -70,7 +72,7 @@ class GdeltFetcher:
                 confidence=confidence,
                 entities=entities,
                 raw_text=text,
-                source="GDELT",
+                source=source_name,
                 stress_test_suggested=impact_calculator.should_trigger_stress_test(impact_score),
                 distribution=distribution
             ))

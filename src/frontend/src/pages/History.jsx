@@ -19,6 +19,7 @@ export const History = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [history, setHistory] = useState([]);
+  const [totalHistory, setTotalHistory] = useState(0);
   const [selectedRun, setSelectedRun] = useState(null);
 
   const loadHistory = async () => {
@@ -27,6 +28,7 @@ export const History = () => {
       const data = await RiskEngineApi.getHistoricalStressTests();
       const list = data?.content || [];
       setHistory(list);
+      setTotalHistory(data?.totalElements || list.length);
       if (list.length > 0) {
         setSelectedRun(list[0]);
       }
@@ -97,7 +99,7 @@ export const History = () => {
             fontWeight: '600',
           }}>
             <Activity size={13} color="#2563eb" />
-            <span>{error ? '--' : history.length} Certified Runs</span>
+            <span>{error ? '--' : totalHistory} Certified Runs</span>
           </div>
 
           <div style={{
@@ -240,6 +242,10 @@ export const History = () => {
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
+              {(() => {
+                const isSelectedLoss = (selectedRun.totalPnlImpact || 0) < 0;
+                return (
+                  <>
               {/* Event Category Details */}
               <div style={{ padding: '0.85rem', backgroundColor: '#131418', borderRadius: '6px', border: '1px solid var(--border-subtle)' }}>
                 <div style={{ fontSize: 'var(--text-overline)', lineHeight: 'var(--leading-none)', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: 'var(--tracking-widest)', fontWeight: '600' }}>
@@ -277,18 +283,18 @@ export const History = () => {
               {/* Net PnL Impact Banner */}
               <div style={{
                 padding: '0.85rem',
-                backgroundColor: 'rgba(239, 68, 68, 0.08)',
+                backgroundColor: isSelectedLoss ? 'rgba(239, 68, 68, 0.08)' : 'rgba(16, 185, 129, 0.08)',
                 borderRadius: '6px',
-                border: '1px solid rgba(239, 68, 68, 0.3)',
+                border: isSelectedLoss ? '1px solid rgba(239, 68, 68, 0.3)' : '1px solid rgba(16, 185, 129, 0.3)',
               }}>
-                <div style={{ fontSize: 'var(--text-overline)', lineHeight: 'var(--leading-none)', color: '#fca5a5', textTransform: 'uppercase', letterSpacing: 'var(--tracking-widest)', fontWeight: '700' }}>
-                  Quantitative PnL Drawdown
+                <div style={{ fontSize: 'var(--text-overline)', lineHeight: 'var(--leading-none)', color: isSelectedLoss ? '#fca5a5' : '#6ee7b7', textTransform: 'uppercase', letterSpacing: 'var(--tracking-widest)', fontWeight: '700' }}>
+                  Quantitative PnL {isSelectedLoss ? 'Drawdown' : 'Gain'}
                 </div>
-                <div style={{ fontSize: 'var(--text-display-lg)', lineHeight: 'var(--leading-tight)', letterSpacing: 'var(--tracking-tightest)', fontWeight: '900', fontFamily: 'var(--font-mono)', color: '#ef4444', marginTop: '0.2rem' }}>
-                  -${Math.abs(selectedRun.totalPnlImpact ?? 0).toFixed(2)}M
+                <div style={{ fontSize: 'var(--text-display-lg)', lineHeight: 'var(--leading-tight)', letterSpacing: 'var(--tracking-tightest)', fontWeight: '900', fontFamily: 'var(--font-mono)', color: isSelectedLoss ? '#ef4444' : '#10b981', marginTop: '0.2rem' }}>
+                  {isSelectedLoss ? '-' : '+'}${Math.abs(selectedRun.totalPnlImpact ?? 0).toFixed(2)}M
                 </div>
-                <div style={{ fontSize: 'var(--text-caption)', lineHeight: 'var(--leading-snug)', letterSpacing: 'var(--tracking-tight)', fontFamily: 'var(--font-mono)', color: '#fda4af', marginTop: '0.1rem' }}>
-                  Erosion: {(selectedRun.percentageChange ?? 0).toFixed(2)}% of notional
+                <div style={{ fontSize: 'var(--text-caption)', lineHeight: 'var(--leading-snug)', letterSpacing: 'var(--tracking-tight)', fontFamily: 'var(--font-mono)', color: isSelectedLoss ? '#fda4af' : '#6ee7b7', marginTop: '0.1rem' }}>
+                  {isSelectedLoss ? 'Erosion' : 'Gain'}: {(selectedRun.percentageChange ?? 0).toFixed(2)}% of notional
                 </div>
               </div>
 
@@ -304,6 +310,9 @@ export const History = () => {
                   Engine: RiskEngine Module B (Factor Model + Delta Normal)
                 </div>
               </div>
+                  </>
+                );
+              })()}
             </div>
           </div>
         ) : (
