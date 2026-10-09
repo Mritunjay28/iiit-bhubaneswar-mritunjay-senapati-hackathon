@@ -97,7 +97,7 @@ export const History = () => {
             fontWeight: '600',
           }}>
             <Activity size={13} color="#2563eb" />
-            <span>{history.length} Certified Runs</span>
+            <span>{error ? '--' : history.length} Certified Runs</span>
           </div>
 
           <div style={{
@@ -115,7 +115,7 @@ export const History = () => {
             fontWeight: '600',
           }}>
             <TrendingDown size={13} color="#ef4444" />
-            <span>Avg Drawdown: ${Math.abs(averageLoss)}M</span>
+            <span>Avg Drawdown: {error ? '--' : `$${Math.abs(averageLoss)}M`}</span>
           </div>
 
           {/* The ONE Repeated CTA */}

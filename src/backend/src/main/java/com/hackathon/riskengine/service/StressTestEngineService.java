@@ -211,13 +211,13 @@ public class StressTestEngineService {
             details.add(detail);
         }
 
-        double totalPnl = totalValAfter - totalValBefore;
-        double pctChange = totalValBefore > 0 ? (totalPnl / totalValBefore) * 100.0 : 0.0;
+        double roundedValBefore = round(totalValBefore);
+        double roundedPctChange = round(totalValBefore > 0 ? (totalPnl / totalValBefore) * 100.0 : 0.0);
 
         // Quantitative Value at Risk (VaR) calculations based on stressed standard deviation
-        double impliedStressVolatility = Math.abs(pctChange) / 100.0 * 0.40 + 0.015;
-        double var95 = round(1.645 * impliedStressVolatility * totalValBefore);
-        double var99 = round(2.326 * impliedStressVolatility * totalValBefore);
+        double impliedStressVolatility = Math.abs(roundedPctChange) / 100.0 * 0.40 + 0.015;
+        double var95 = round(1.645 * impliedStressVolatility * roundedValBefore);
+        double var99 = round(2.326 * impliedStressVolatility * roundedValBefore);
 
         // Build JPA Entity
         StressTestResult result = new StressTestResult(

@@ -120,6 +120,7 @@ export const StressTest = () => {
 
   const handleRunTest = async () => {
     setExecuting(true);
+    setError(null);
     try {
       const spread = customShocks.creditSpreadShock != null
         ? customShocks.creditSpreadShock
