@@ -23,19 +23,22 @@ export const Dashboard = () => {
   const [signals, setSignals] = useState([]);
   const [stats, setStats] = useState(null);
   const [portfolioSummary, setPortfolioSummary] = useState(null);
+  const [latestStressTest, setLatestStressTest] = useState(null);
   const [activeFilter, setActiveFilter] = useState('ALL');
 
   const loadData = async () => {
     try {
       setError(null);
-      const [signalsData, statsData, summaryData] = await Promise.all([
+      const [signalsData, statsData, summaryData, latestTest] = await Promise.all([
         RiskEngineApi.getLatestSignals(),
         RiskEngineApi.getSignalStats(),
         RiskEngineApi.getPortfolioSummary(),
+        RiskEngineApi.getLatestStressTest().catch(() => null),
       ]);
       setSignals(signalsData || []);
       setStats(statsData || {});
       setPortfolioSummary(summaryData || {});
+      setLatestStressTest(latestTest || null);
     } catch (err) {
       setError("Backend unreachable");
     } finally {
@@ -61,7 +64,7 @@ export const Dashboard = () => {
     return <Loader message="Aggregating financial NLP telemetry and portfolio exposure..." />;
   }
 
-  const highImpactCount = signals.filter(s => (s.impactScore || 0) >= 7).length;
+  const highImpactCount = error ? '--' : signals.filter(s => (s.impactScore || 0) >= 7).length;
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
@@ -121,9 +124,9 @@ export const Dashboard = () => {
         <KpiCard
           className="scroll-reveal reveal-delay-4"
           title="1-Day Parametric VaR (95%)"
-          value={stats?.valueAtRisk95 ? `$${stats.valueAtRisk95}M` : '--'}
+          value={latestStressTest?.valueAtRisk95 != null ? `$${latestStressTest.valueAtRisk95.toFixed(1)}M` : '--'}
           subtitle="Crisis Horizon Loss Boundary"
-          change="-6.36% Cap"
+          change={latestStressTest?.percentageChange != null ? `${latestStressTest.percentageChange.toFixed(2)}% Cap` : '--'}
           changeType="negative"
           icon={ShieldAlert}
           accent="cyan"

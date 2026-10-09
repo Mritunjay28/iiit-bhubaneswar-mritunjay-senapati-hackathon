@@ -93,14 +93,14 @@ export const Header = () => {
             alignItems: 'center',
             gap: '0.45rem',
             padding: '0.35rem 0.75rem',
-            backgroundColor: 'rgba(16, 185, 129, 0.08)',
-            border: '1px solid rgba(16, 185, 129, 0.25)',
+            backgroundColor: status.status === 'OFFLINE' ? 'rgba(239, 68, 68, 0.08)' : (status.nlpServiceOnline ? 'rgba(16, 185, 129, 0.08)' : 'rgba(245, 158, 11, 0.08)'),
+            border: status.status === 'OFFLINE' ? '1px solid rgba(239, 68, 68, 0.25)' : (status.nlpServiceOnline ? '1px solid rgba(16, 185, 129, 0.25)' : '1px solid rgba(245, 158, 11, 0.25)'),
             borderRadius: '4px',
             fontSize: 'var(--text-caption)',
             lineHeight: 'var(--leading-none)',
             letterSpacing: 'var(--tracking-normal)',
             fontFamily: 'var(--font-mono)',
-            color: '#10b981',
+            color: status.status === 'OFFLINE' ? '#ef4444' : (status.nlpServiceOnline ? '#10b981' : '#f59e0b'),
           }}
         >
           <span
@@ -108,11 +108,11 @@ export const Header = () => {
               width: '7px',
               height: '7px',
               borderRadius: '50%',
-              backgroundColor: '#10b981',
+              backgroundColor: status.status === 'OFFLINE' ? '#ef4444' : (status.nlpServiceOnline ? '#10b981' : '#f59e0b'),
             }}
-            className="pulse-indicator"
+            className={status.status !== 'OFFLINE' ? "pulse-indicator" : ""}
           />
-          <span>{status.nlpServiceOnline ? 'FinBERT Live' : 'Fallback Active'}</span>
+          <span>{status.status === 'OFFLINE' ? 'Offline' : (status.nlpServiceOnline ? 'FinBERT Live' : 'Fallback Active')}</span>
         </div>
 
         {/* Global Manual Refresh Button */}

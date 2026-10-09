@@ -61,10 +61,13 @@ export const Portfolio = () => {
   const handleReset = async () => {
     setResetting(true);
     try {
+      setError(null);
       const defaultAssets = await RiskEngineApi.resetPortfolio();
       setAssets(defaultAssets);
       const summaryData = await RiskEngineApi.getPortfolioSummary();
       setSummary(summaryData);
+    } catch (err) {
+      setError("Backend unreachable");
     } finally {
       setResetting(false);
     }
@@ -81,15 +84,20 @@ export const Portfolio = () => {
     return matchesType && matchesQuery;
   });
 
-  const assetTypeChartData = summary?.notionalByType
-    ? Object.entries(summary.notionalByType).map(([name, value]) => ({ name, value }))
+  const assetTypeChartData = summary?.assetClassBreakdown
+    ? summary.assetClassBreakdown.map(b => ({ name: b.assetType, value: b.totalNotional }))
     : [];
 
-  const sectorChartData = summary?.notionalBySector
-    ? Object.entries(summary.notionalBySector).map(([name, value]) => ({ name, value }))
+  const sectorChartData = summary?.sectorBreakdown
+    ? summary.sectorBreakdown.map(b => ({ name: b.sector, value: b.totalNotional }))
     : [];
 
-  const totalNotional = summary?.totalNotional ?? '--';
+  const totalNotional = summary?.totalNotionalValue ?? '--';
+
+  const getAssetNotional = (type) => {
+    const item = summary?.assetClassBreakdown?.find(b => b.assetType === type);
+    return item ? item.totalNotional : null;
+  };
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
@@ -168,7 +176,7 @@ export const Portfolio = () => {
             Fixed Income Allocation
           </div>
           <div style={{ fontSize: 'var(--text-display-lg)', lineHeight: 'var(--leading-tight)', letterSpacing: 'var(--tracking-tightest)', fontWeight: '900', fontFamily: 'var(--font-mono)', color: '#bfdbfe', marginTop: '0.2rem' }}>
-            {summary?.notionalByType?.BOND != null ? `$${summary.notionalByType.BOND}M` : '--'}
+            {getAssetNotional('BOND') != null ? `$${getAssetNotional('BOND').toFixed(1)}M` : '--'}
           </div>
           <div style={{ fontSize: 'var(--text-caption)', lineHeight: 'var(--leading-snug)', letterSpacing: 'var(--tracking-normal)', color: 'var(--text-secondary)', marginTop: '0.15rem' }}>
             Govt & corporate duration
@@ -180,7 +188,7 @@ export const Portfolio = () => {
             Corporate & EM Loans
           </div>
           <div style={{ fontSize: 'var(--text-display-lg)', lineHeight: 'var(--leading-tight)', letterSpacing: 'var(--tracking-tightest)', fontWeight: '900', fontFamily: 'var(--font-mono)', color: '#6ee7b7', marginTop: '0.2rem' }}>
-            {summary?.notionalByType?.LOAN != null ? `$${summary.notionalByType.LOAN}M` : '--'}
+            {getAssetNotional('LOAN') != null ? `$${getAssetNotional('LOAN').toFixed(1)}M` : '--'}
           </div>
           <div style={{ fontSize: 'var(--text-caption)', lineHeight: 'var(--leading-snug)', letterSpacing: 'var(--tracking-normal)', color: 'var(--text-secondary)', marginTop: '0.15rem' }}>
             Subject to spread widening
@@ -192,7 +200,7 @@ export const Portfolio = () => {
             Derivatives & Equity
           </div>
           <div style={{ fontSize: 'var(--text-display-lg)', lineHeight: 'var(--leading-tight)', letterSpacing: 'var(--tracking-tightest)', fontWeight: '900', fontFamily: 'var(--font-mono)', color: '#7dd3fc', marginTop: '0.2rem' }}>
-            {summary?.notionalByType?.DERIVATIVE != null && summary?.notionalByType?.EQUITY != null ? `$${summary.notionalByType.DERIVATIVE + summary.notionalByType.EQUITY}M` : '--'}
+            {getAssetNotional('DERIVATIVE') != null || getAssetNotional('EQUITY') != null ? `$${((getAssetNotional('DERIVATIVE') || 0) + (getAssetNotional('EQUITY') || 0)).toFixed(1)}M` : '--'}
           </div>
           <div style={{ fontSize: 'var(--text-caption)', lineHeight: 'var(--leading-snug)', letterSpacing: 'var(--tracking-normal)', color: 'var(--text-secondary)', marginTop: '0.15rem' }}>
             Convexity & beta sensitivity
@@ -253,7 +261,7 @@ export const Portfolio = () => {
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', overflowY: 'auto', maxHeight: '250px', paddingRight: '0.25rem' }}>
             {sectorChartData.map((item, index) => {
-              const pct = ((item.value / totalNotional) * 100).toFixed(1);
+              const pct = totalNotional !== '--' ? ((item.value / totalNotional) * 100).toFixed(1) : '0.0';
               const barColor = SECTOR_BAR_COLORS[index % SECTOR_BAR_COLORS.length];
               return (
                 <div key={item.name} style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>

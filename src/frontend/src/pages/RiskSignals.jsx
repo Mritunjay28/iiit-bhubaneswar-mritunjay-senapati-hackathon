@@ -117,7 +117,7 @@ export const RiskSignals = () => {
     return matchEvent && matchSource && matchImpact && matchSearch;
   });
 
-  const highImpactCount = signals.filter(s => s.impactScore >= 7).length;
+  const highImpactCount = error ? '--' : signals.filter(s => s.impactScore >= 7).length;
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
