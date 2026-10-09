@@ -211,8 +211,11 @@ public class StressTestEngineService {
             details.add(detail);
         }
 
+        double totalPnl = totalValAfter - totalValBefore;
+        double pctChange = totalValBefore > 0 ? (totalPnl / totalValBefore) * 100.0 : 0.0;
+
         double roundedValBefore = round(totalValBefore);
-        double roundedPctChange = round(totalValBefore > 0 ? (totalPnl / totalValBefore) * 100.0 : 0.0);
+        double roundedPctChange = round(pctChange);
 
         // Quantitative Value at Risk (VaR) calculations based on stressed standard deviation
         double impliedStressVolatility = Math.abs(roundedPctChange) / 100.0 * 0.40 + 0.015;
