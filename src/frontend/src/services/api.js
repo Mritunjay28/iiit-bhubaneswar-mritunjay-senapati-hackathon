@@ -75,7 +75,7 @@ export const RiskEngineApi = {
     return res.data;
   },
 
-  async fetchGdelt(query = 'bank crisis OR interest rate OR default', days = 1, maxRecords = 10) {
+  async fetchGdelt(query = '("bank crisis" OR "interest rate" OR default)', days = 1, maxRecords = 10) {
     const res = await apiClient.post('/signals/fetch/gdelt', null, { params: { query, days, maxRecords } });
     return res.data;
   },

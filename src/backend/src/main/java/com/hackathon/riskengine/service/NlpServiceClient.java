@@ -158,7 +158,7 @@ public class NlpServiceClient {
     public GdeltFetchResponseDto fetchGdelt(String query, Integer days, Integer maxRecords) {
         int d = (days != null && days > 0) ? days : 1;
         int m = (maxRecords != null && maxRecords > 0) ? maxRecords : 10;
-        String q = (query != null && !query.isBlank()) ? query : "bank crisis OR interest rate OR default";
+        String q = (query != null && !query.isBlank()) ? query : "(\"bank crisis\" OR \"interest rate\" OR default)";
 
         try {
             GdeltFetchResponseDto response = webClient.get()
