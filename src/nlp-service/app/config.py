@@ -25,6 +25,7 @@ class Settings(BaseModel):
             Path("/app/data"),
             Path(__file__).resolve().parent.parent.parent / "data",
             Path(__file__).resolve().parent.parent / "data",
+            Path(__file__).resolve().parents[3] / "data",
             Path("data"),
             Path("../data"),
         ]

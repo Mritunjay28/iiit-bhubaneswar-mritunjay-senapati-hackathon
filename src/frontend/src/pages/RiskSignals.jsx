@@ -58,6 +58,8 @@ export const RiskSignals = () => {
       const newItems = await RiskEngineApi.fetchGdelt();
       setStatusMessage(`Ingested ${newItems.length} news articles from GDELT into FinBERT.`);
       await loadSignals();
+    } catch (err) {
+      setStatusMessage('Error: Failed to fetch GDELT news.');
     } finally {
       setIngesting(false);
       setTimeout(() => setStatusMessage(null), 4000);
@@ -71,6 +73,8 @@ export const RiskSignals = () => {
       const newItems = await RiskEngineApi.fetchTweets();
       setStatusMessage(`Ingested ${newItems.length} tweets from sample dataset.`);
       await loadSignals();
+    } catch (err) {
+      setStatusMessage('Error: Failed to load sample tweets.');
     } finally {
       setIngesting(false);
       setTimeout(() => setStatusMessage(null), 4000);
@@ -87,6 +91,8 @@ export const RiskSignals = () => {
       setCustomText('');
       setShowCustomBox(false);
       await loadSignals();
+    } catch (err) {
+      setStatusMessage('Error: Failed to evaluate signal.');
     } finally {
       setIngesting(false);
       setTimeout(() => setStatusMessage(null), 4000);

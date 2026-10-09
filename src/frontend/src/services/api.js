@@ -198,107 +198,14 @@ export const RiskEngineApi = {
   },
 
   async runStressTest(request) {
-    try {
-      const spread = request.creditSpreadShock ?? request.creditSpreadShockBps ?? 150.0;
-      const normalizedRequest = {
-        ...request,
-        creditSpreadShock: spread,
-        creditSpreadShockBps: spread,
-      };
-      const res = await apiClient.post('/stress-tests/run', normalizedRequest);
-      return res.data;
-    } catch {
-      // High-precision financial fallback calculation
-      const scenario = DEFAULT_SCENARIOS.find(s => s.eventType === request.eventType) || DEFAULT_SCENARIOS[0];
-      const eqShock = request.equityShock ?? scenario.equityShock;
-      const rateShock = request.interestRateShock ?? scenario.interestRateShock;
-      const spreadShock = request.creditSpreadShock ?? request.creditSpreadShockBps ?? scenario.creditSpreadShock ?? 150.0;
-      const fxShock = request.fxShock ?? scenario.fxShock;
-      const commShock = request.commodityShock ?? scenario.commodityShock;
-
-      let totalBefore = 0;
-      let totalAfter = 0;
-      const assetDetails = DEFAULT_PORTFOLIO.map(asset => {
-        let pnl = 0;
-        let shockPercent = 0;
-        if (asset.assetType === 'EQUITY') {
-          pnl = asset.notionalValue * eqShock;
-          shockPercent = eqShock * 100;
-        } else if (asset.assetType === 'BOND') {
-          const durationImpact = -(asset.duration || 5.0) * rateShock;
-          const spreadImpact = -(asset.duration || 5.0) * (spreadShock / 10000.0);
-          pnl = asset.notionalValue * (durationImpact + spreadImpact);
-          shockPercent = (durationImpact + spreadImpact) * 100;
-        } else if (asset.assetType === 'LOAN') {
-          const effectiveTenor = 3.2;
-          const defaultMigrationBuffer = 0.015 * (spreadShock / 100.0);
-          const loanShock = -(spreadShock / 10000.0) * effectiveTenor - defaultMigrationBuffer;
-          pnl = asset.notionalValue * loanShock;
-          shockPercent = loanShock * 100;
-        } else if (asset.assetType === 'DERIVATIVE') {
-          if (asset.sector === 'Index') {
-            pnl = asset.notionalValue * eqShock;
-            shockPercent = eqShock * 100;
-          } else if (asset.sector === 'FX') {
-            pnl = asset.notionalValue * fxShock;
-            shockPercent = fxShock * 100;
-          } else if (asset.sector === 'Commodity') {
-            pnl = asset.notionalValue * commShock;
-            shockPercent = commShock * 100;
-          } else {
-            pnl = asset.notionalValue * (eqShock * 0.5);
-            shockPercent = (eqShock * 0.5) * 100;
-          }
-        }
-        totalBefore += asset.notionalValue;
-        totalAfter += (asset.notionalValue + pnl);
-        return {
-          assetId: asset.id,
-          assetName: asset.assetName,
-          assetType: asset.assetType,
-          sector: asset.sector,
-          valueBefore: asset.notionalValue,
-          valueAfter: Math.round((asset.notionalValue + pnl) * 100) / 100,
-          pnlImpact: Math.round(pnl * 100) / 100,
-          shockApplied: Math.round(shockPercent * 100) / 100,
-          shockAppliedPercent: Math.round(shockPercent * 100) / 100,
-          percentageChange: Math.round(shockPercent * 100) / 100,
-        };
-      });
-
-      const totalPnl = Math.round((totalAfter - totalBefore) * 100) / 100;
-      const worstAsset = [...assetDetails].sort((a, b) => a.pnlImpact - b.pnlImpact)[0];
-
-      return {
-        id: Date.now(),
-        triggerSignalId: request.triggerSignalId || null,
-        eventType: scenario.eventType,
-        scenarioName: scenario.scenarioName,
-        portfolioValueBefore: Math.round(totalBefore * 100) / 100,
-        portfolioValueAfter: Math.round(totalAfter * 100) / 100,
-        totalPnlImpact: totalPnl,
-        percentageChange: Math.round((totalPnl / totalBefore) * 10000) / 100,
-        executedAt: new Date().toISOString(),
-        assetDetails,
-        assetClassPnl: {
-          BOND: Math.round(assetDetails.filter(a => a.assetType === 'BOND').reduce((acc, c) => acc + c.pnlImpact, 0) * 100) / 100,
-          LOAN: Math.round(assetDetails.filter(a => a.assetType === 'LOAN').reduce((acc, c) => acc + c.pnlImpact, 0) * 100) / 100,
-          EQUITY: Math.round(assetDetails.filter(a => a.assetType === 'EQUITY').reduce((acc, c) => acc + c.pnlImpact, 0) * 100) / 100,
-          DERIVATIVE: Math.round(assetDetails.filter(a => a.assetType === 'DERIVATIVE').reduce((acc, c) => acc + c.pnlImpact, 0) * 100) / 100,
-        },
-        sectorPnl: {
-          Banking: -14.2,
-          Government: -18.5,
-          Technology: -10.2,
-          Index: -9.0,
-          Commodity: 5.25,
-        },
-        valueAtRisk95: Math.round(Math.abs(totalPnl) * 0.85 * 100) / 100,
-        valueAtRisk99: Math.round(Math.abs(totalPnl) * 1.25 * 100) / 100,
-        worstHitAsset: worstAsset ? worstAsset.assetName : 'US Treasury 10Y',
-        worstHitAssetPnl: worstAsset ? worstAsset.pnlImpact : -18.5,
-      };
-    }
+    const spread = request.creditSpreadShock ?? request.creditSpreadShockBps ?? 150.0;
+    const normalizedRequest = {
+      ...request,
+      creditSpreadShock: spread,
+      creditSpreadShockBps: spread,
+    };
+    const res = await apiClient.post('/stress-tests/run', normalizedRequest);
+    return res.data;
   },
 
   async getHistoricalStressTests(page = 0, size = 10) {

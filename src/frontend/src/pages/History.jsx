@@ -68,7 +68,7 @@ export const History = () => {
             Stress Testing Audit Trail & Run History
           </h2>
           <p style={{ fontSize: 'var(--text-caption)', lineHeight: 'var(--leading-relaxed)', letterSpacing: 'var(--tracking-normal)', color: 'var(--text-secondary)', margin: '0.2rem 0 0 0' }}>
-            Immutable historical record of automated market shock triggers and manual quantitative simulations
+            Historical record of automated market shock triggers and manual quantitative simulations
           </p>
         </div>
 
@@ -292,7 +292,7 @@ export const History = () => {
                   {selectedRun.executedAt ? new Date(selectedRun.executedAt).toUTCString() : 'Recent Session'}
                 </div>
                 <div style={{ fontSize: 'var(--text-micro)', lineHeight: 'var(--leading-normal)', letterSpacing: 'var(--tracking-normal)', color: 'var(--text-muted)', marginTop: '0.2rem' }}>
-                  Engine: RiskEngine Module B (Monte Carlo + Delta Normal)
+                  Engine: RiskEngine Module B (Factor Model + Delta Normal)
                 </div>
               </div>
             </div>

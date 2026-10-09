@@ -18,7 +18,7 @@ async def lifespan(app: FastAPI):
     logger.info("Initializing %s v%s...", settings.app_name, settings.app_version)
     sentiment_analyzer.load_model()
     app.state.sentiment_analyzer = sentiment_analyzer
-    app.state.model_loaded = sentiment_analyzer.is_loaded
+    app.state.model_loaded = sentiment_analyzer.is_loaded and not sentiment_analyzer.is_fallback
     yield
     logger.info("Shutting down %s...", settings.app_name)
 

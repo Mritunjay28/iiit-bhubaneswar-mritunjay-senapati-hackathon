@@ -119,7 +119,7 @@ npm run dev
 
 ### Tests
 ```bash
-cd src/backend && ./mvnw test          # 17 JUnit unit/integration tests (H2)
+cd src/backend && ./mvnw test          # 21 JUnit unit/integration tests (H2)
 cd src/nlp-service && python test_nlp.py   # classifier, impact score, lexicon sentiment
 python test_e2e_pipeline.py            # end-to-end smoke test against a running stack
 ```

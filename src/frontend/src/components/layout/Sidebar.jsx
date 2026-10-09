@@ -9,6 +9,7 @@ import {
   ShieldCheck,
   Server,
 } from 'lucide-react';
+import { RiskEngineApi } from '../../services/api';
 
 export const Sidebar = () => {
   const navItems = [
@@ -18,6 +19,11 @@ export const Sidebar = () => {
     { to: '/portfolio', label: 'Portfolio Holdings', icon: PieChart },
     { to: '/history', label: 'Audit History', icon: History },
   ];
+
+  const [status, setStatus] = React.useState(null);
+  React.useEffect(() => {
+    RiskEngineApi.getSystemStatus().then(res => setStatus(res)).catch(() => {});
+  }, []);
 
   return (
     <aside
@@ -173,15 +179,15 @@ export const Sidebar = () => {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem', fontSize: 'var(--text-micro)', lineHeight: 'var(--leading-normal)', letterSpacing: 'var(--tracking-normal)', fontFamily: 'var(--font-mono)' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-muted)' }}>
             <span>Spring Boot Core:</span>
-            <span style={{ color: '#10b981', fontWeight: '600' }}>:8080 Active</span>
+            <span style={{ color: status?.status === 'OK' ? '#10b981' : '#ef4444', fontWeight: '600' }}>:8080 {status?.status === 'OK' ? 'Active' : 'Offline'}</span>
           </div>
           <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-muted)' }}>
             <span>FinBERT NLP:</span>
-            <span style={{ color: '#10b981', fontWeight: '600' }}>:8000 Online</span>
+            <span style={{ color: status?.nlpServiceOnline ? '#10b981' : '#f59e0b', fontWeight: '600' }}>:8000 {status?.nlpServiceOnline ? 'Online' : 'Fallback'}</span>
           </div>
           <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-muted)' }}>
             <span>PostgreSQL:</span>
-            <span style={{ color: '#10b981', fontWeight: '600' }}>:5432 Ready</span>
+            <span style={{ color: status?.status === 'OK' ? '#10b981' : '#ef4444', fontWeight: '600' }}>:5432 {status?.status === 'OK' ? 'Ready' : 'Offline'}</span>
           </div>
         </div>
       </div>
