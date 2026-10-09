@@ -69,99 +69,41 @@ export const RiskEngineApi = {
 
   // --- Portfolio ---
   async getPortfolio(assetType = null, sector = null) {
-    try {
-      const params = {};
-      if (assetType) params.assetType = assetType;
-      if (sector) params.sector = sector;
-      const res = await apiClient.get('/portfolio', { params });
-      return res.data;
-    } catch {
-      let filtered = [...DEFAULT_PORTFOLIO];
-      if (assetType) filtered = filtered.filter(a => a.assetType === assetType);
-      if (sector) filtered = filtered.filter(a => a.sector.toLowerCase() === sector.toLowerCase());
-      return filtered;
-    }
+    const params = {};
+    if (assetType) params.assetType = assetType;
+    if (sector) params.sector = sector;
+    const res = await apiClient.get('/portfolio', { params });
+    return res.data;
   },
 
   async getPortfolioSummary() {
-    try {
-      const res = await apiClient.get('/portfolio/summary');
-      return res.data;
-    } catch {
-      const notionalByType = { BOND: 220.0, LOAN: 110.0, DERIVATIVE: 180.0, EQUITY: 75.0 };
-      const notionalBySector = { Banking: 140.0, Government: 145.0, Technology: 63.0, Index: 75.0, FX: 40.0, Commodity: 35.0, 'EM Sovereign': 45.0, Auto: 20.0, 'Real Estate': 22.0 };
-      return {
-        totalNotionalValue: 585.0,
-        count: 15,
-        assetCountByType: { BOND: 5, LOAN: 2, DERIVATIVE: 4, EQUITY: 4 },
-        assetCountBySector: { Banking: 3, Government: 2, Technology: 3, Index: 1, FX: 1, Commodity: 1, 'EM Sovereign': 2, Auto: 1, 'Real Estate': 1 },
-        notionalByType,
-        notionalBySector,
-      };
-    }
+    const res = await apiClient.get('/portfolio/summary');
+    return res.data;
   },
 
   async resetPortfolio() {
-    try {
-      const res = await apiClient.post('/portfolio/reset');
-      return res.data;
-    } catch {
-      return DEFAULT_PORTFOLIO;
-    }
+    const res = await apiClient.post('/portfolio/reset');
+    return res.data;
   },
 
   // --- Signals ---
   async getSignals(eventType = null, source = null, minImpact = null, page = 0, size = 20) {
-    try {
-      const params = { page, size };
-      if (eventType) params.eventType = eventType;
-      if (source) params.source = source;
-      if (minImpact) params.minImpact = minImpact;
-      const res = await apiClient.get('/signals', { params });
-      return res.data;
-    } catch {
-      let items = [...DEFAULT_SIGNALS];
-      if (eventType) items = items.filter(s => s.eventType === eventType);
-      if (source) items = items.filter(s => s.source === source);
-      if (minImpact) items = items.filter(s => s.impactScore >= minImpact);
-      return {
-        content: items,
-        totalElements: items.length,
-        totalPages: 1,
-        number: page,
-        size: size,
-      };
-    }
+    const params = { page, size };
+    if (eventType) params.eventType = eventType;
+    if (source) params.source = source;
+    if (minImpact) params.minImpact = minImpact;
+    const res = await apiClient.get('/signals', { params });
+    return res.data;
   },
 
   async getLatestSignals() {
-    try {
-      const res = await apiClient.get('/signals/latest');
-      return res.data;
-    } catch {
-      return DEFAULT_SIGNALS;
-    }
+    const res = await apiClient.get('/signals/latest');
+    return res.data;
   },
 
   async getSignalStats() {
-    try {
-      const res = await apiClient.get('/signals/stats');
-      return res.data;
-    } catch {
-      return {
-        totalSignals: DEFAULT_SIGNALS.length,
-        highImpactCount: DEFAULT_SIGNALS.filter(s => s.impactScore >= 7).length,
-        avgSentimentScore: -0.28,
-        countsByEventType: {
-          GEOPOLITICAL: 1,
-          CREDIT_EVENT: 2,
-          MACROECONOMIC: 1,
-          MERGER_ACQUISITION: 1,
-          PRODUCT_LAUNCH: 1,
-        },
-        countsBySource: { GDELT: 4, TWITTER: 2 },
-      };
-    }
+    const res = await apiClient.get('/signals/stats');
+    return res.data;
   },
 
   async ingestSignal(text, source = 'MANUAL', entity = 'Market') {
@@ -181,20 +123,16 @@ export const RiskEngineApi = {
 
   // --- Stress Tests ---
   async getScenarios() {
-    try {
-      const res = await apiClient.get('/stress-tests/scenarios');
-      const list = Array.isArray(res.data) ? res.data : [];
-      return list.map(s => {
-        const spread = s.creditSpreadShock ?? s.creditSpreadShockBps ?? 150.0;
-        return {
-          ...s,
-          creditSpreadShock: spread,
-          creditSpreadShockBps: spread,
-        };
-      });
-    } catch {
-      return DEFAULT_SCENARIOS;
-    }
+    const res = await apiClient.get('/stress-tests/scenarios');
+    const list = Array.isArray(res.data) ? res.data : [];
+    return list.map(s => {
+      const spread = s.creditSpreadShock ?? s.creditSpreadShockBps ?? 150.0;
+      return {
+        ...s,
+        creditSpreadShock: spread,
+        creditSpreadShockBps: spread,
+      };
+    });
   },
 
   async runStressTest(request) {
@@ -209,66 +147,17 @@ export const RiskEngineApi = {
   },
 
   async getHistoricalStressTests(page = 0, size = 10) {
-    try {
-      const res = await apiClient.get('/stress-tests', { params: { page, size } });
-      return res.data;
-    } catch {
-      return {
-        content: [
-          {
-            id: 201,
-            scenarioName: 'Geopolitical Crisis',
-            eventType: 'GEOPOLITICAL',
-            portfolioValueBefore: 585.0,
-            portfolioValueAfter: 541.25,
-            totalPnlImpact: -43.75,
-            percentageChange: -7.48,
-            executedAt: '2026-10-03T15:20:05',
-          },
-          {
-            id: 202,
-            scenarioName: 'Credit Crunch',
-            eventType: 'CREDIT_EVENT',
-            portfolioValueBefore: 585.0,
-            portfolioValueAfter: 532.8,
-            totalPnlImpact: -52.2,
-            percentageChange: -8.92,
-            executedAt: '2026-10-03T14:40:10',
-          },
-          {
-            id: 203,
-            scenarioName: 'Macro Downturn',
-            eventType: 'MACROECONOMIC',
-            portfolioValueBefore: 585.0,
-            portfolioValueAfter: 554.4,
-            totalPnlImpact: -30.6,
-            percentageChange: -5.23,
-            executedAt: '2026-10-03T11:15:30',
-          },
-        ],
-        totalElements: 3,
-        totalPages: 1,
-        number: page,
-        size: size,
-      };
-    }
+    const res = await apiClient.get('/stress-tests', { params: { page, size } });
+    return res.data;
   },
 
   async getLatestStressTest() {
-    try {
-      const res = await apiClient.get('/stress-tests/latest');
-      return res.data;
-    } catch {
-      return this.runStressTest({ eventType: 'GEOPOLITICAL' });
-    }
+    const res = await apiClient.get('/stress-tests/latest');
+    return res.data;
   },
 
   async getStressTestById(id) {
-    try {
-      const res = await apiClient.get(`/stress-tests/${id}`);
-      return res.data;
-    } catch {
-      return this.runStressTest({ eventType: 'GEOPOLITICAL' });
-    }
+    const res = await apiClient.get(`/stress-tests/${id}`);
+    return res.data;
   },
 };

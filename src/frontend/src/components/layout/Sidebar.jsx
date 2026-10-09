@@ -179,7 +179,7 @@ export const Sidebar = () => {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem', fontSize: 'var(--text-micro)', lineHeight: 'var(--leading-normal)', letterSpacing: 'var(--tracking-normal)', fontFamily: 'var(--font-mono)' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-muted)' }}>
             <span>Spring Boot Core:</span>
-            <span style={{ color: status?.status === 'OK' ? '#10b981' : '#ef4444', fontWeight: '600' }}>:8080 {status?.status === 'OK' ? 'Active' : 'Offline'}</span>
+            <span style={{ color: status?.status !== 'OFFLINE' ? '#10b981' : '#ef4444', fontWeight: '600' }}>:8080 {status?.status !== 'OFFLINE' ? 'Active' : 'Offline'}</span>
           </div>
           <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-muted)' }}>
             <span>FinBERT NLP:</span>
@@ -187,7 +187,7 @@ export const Sidebar = () => {
           </div>
           <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-muted)' }}>
             <span>PostgreSQL:</span>
-            <span style={{ color: status?.status === 'OK' ? '#10b981' : '#ef4444', fontWeight: '600' }}>:5432 {status?.status === 'OK' ? 'Ready' : 'Offline'}</span>
+            <span style={{ color: status?.status !== 'OFFLINE' ? '#10b981' : '#ef4444', fontWeight: '600' }}>:5432 {status?.status !== 'OFFLINE' ? 'Ready' : 'Offline'}</span>
           </div>
         </div>
       </div>
