@@ -373,8 +373,13 @@ public class StressTestEngineService {
         dto.setSectorPnl(sPnl);
 
         double totalVal = result.getPortfolioValueBefore();
-        dto.setValueAtRisk95(var95 != null ? var95 : round(totalVal * 0.038));
-        dto.setValueAtRisk99(var99 != null ? var99 : round(totalVal * 0.054));
+        double pctChange = result.getPercentageChange();
+        double impliedStressVolatility = Math.abs(pctChange) / 100.0 * 0.40 + 0.015;
+        double calcVar95 = round(1.645 * impliedStressVolatility * totalVal);
+        double calcVar99 = round(2.326 * impliedStressVolatility * totalVal);
+
+        dto.setValueAtRisk95(var95 != null ? var95 : calcVar95);
+        dto.setValueAtRisk99(var99 != null ? var99 : calcVar99);
         dto.setWorstHitAsset(calculatedWorstAsset);
         dto.setWorstHitAssetPnl(round(maxLoss));
 

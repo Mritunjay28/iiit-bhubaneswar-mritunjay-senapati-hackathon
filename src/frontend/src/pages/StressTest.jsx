@@ -149,6 +149,7 @@ export const StressTest = () => {
       }
     } catch (err) {
       console.error('Failed to run stress test:', err);
+      setError("Failed to simulate shock: Backend unreachable");
     } finally {
       setExecuting(false);
     }

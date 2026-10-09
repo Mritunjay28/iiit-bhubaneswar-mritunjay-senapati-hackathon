@@ -60,6 +60,18 @@ export const Dashboard = () => {
     return true;
   });
 
+  const getAssetNotionalStr = (type) => {
+    if (!portfolioSummary?.assetClassBreakdown) return '--';
+    const item = portfolioSummary.assetClassBreakdown.find(b => b.assetType === type);
+    return item != null ? `$${item.totalNotional.toFixed(1)}M` : '--';
+  };
+  
+  const getAssetPctStr = (type) => {
+    if (!portfolioSummary?.assetClassBreakdown || !portfolioSummary?.totalNotionalValue) return '--';
+    const item = portfolioSummary.assetClassBreakdown.find(b => b.assetType === type);
+    return item != null ? `${((item.totalNotional / portfolioSummary.totalNotionalValue) * 100).toFixed(1)}%` : '--';
+  };
+
   if (loading) {
     return <Loader message="Aggregating financial NLP telemetry and portfolio exposure..." />;
   }
@@ -286,10 +298,10 @@ export const Dashboard = () => {
 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.75rem' }}>
               {[
-                { type: 'BONDS', notional: '$220.0M', share: '37.6%', color: '#3b82f6', note: 'Duration sensitive' },
-                { type: 'DERIVATIVES', notional: '$180.0M', share: '30.8%', color: '#0284c7', note: 'Index & Commodity' },
-                { type: 'LOANS', notional: '$110.0M', share: '18.8%', color: '#10b981', note: 'Credit spread sensitive' },
-                { type: 'EQUITIES', notional: '$75.0M', share: '12.8%', color: '#f59e0b', note: 'Direct equity beta' },
+                { type: 'BONDS', notional: getAssetNotionalStr('BOND'), share: getAssetPctStr('BOND'), color: '#3b82f6', note: 'Duration sensitive' },
+                { type: 'DERIVATIVES', notional: getAssetNotionalStr('DERIVATIVE'), share: getAssetPctStr('DERIVATIVE'), color: '#0284c7', note: 'Index & Commodity' },
+                { type: 'LOANS', notional: getAssetNotionalStr('LOAN'), share: getAssetPctStr('LOAN'), color: '#10b981', note: 'Credit spread sensitive' },
+                { type: 'EQUITIES', notional: getAssetNotionalStr('EQUITY'), share: getAssetPctStr('EQUITY'), color: '#f59e0b', note: 'Direct equity beta' },
               ].map(item => (
                 <div
                   key={item.type}

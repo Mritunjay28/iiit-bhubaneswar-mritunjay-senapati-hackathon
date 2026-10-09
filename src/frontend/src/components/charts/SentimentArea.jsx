@@ -58,14 +58,7 @@ export const SentimentArea = React.memo(({ signals = [] }) => {
         impact: s.impactScore,
         entity: s.entity || 'Market',
       }))
-    : [
-        { time: '10:00', sentiment: 0.15, impact: 3, entity: 'S&P 500' },
-        { time: '11:00', sentiment: -0.25, impact: 5, entity: 'US Treasury' },
-        { time: '12:00', sentiment: 0.45, impact: 4, entity: 'Tech Index' },
-        { time: '13:00', sentiment: -0.65, impact: 7, entity: 'Credit Default' },
-        { time: '14:00', sentiment: -0.84, impact: 8, entity: 'Banking' },
-        { time: '15:00', sentiment: -0.78, impact: 9, entity: 'Crude Oil' },
-      ];
+    : [];
 
   return (
     <div style={{ width: '100%', height: 240 }}>
