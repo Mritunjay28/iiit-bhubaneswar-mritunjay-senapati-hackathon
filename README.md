@@ -78,7 +78,7 @@ All data is **synthetic or publicly available**. No proprietary or client data i
 | **A6** | Bonds: `−D·Δr − D·Δspread + ½·C·Δr²` with `C ≈ D²/2` | Duration plus spread with an approximate convexity term |
 | **A7** | Loans: `−Δspread × 3.2y tenor − 1.5% per 100bps` migration buffer. Equities: equity shock × sector beta (Tech 1.3, Auto 1.4, Banking 1.2, REIT 1.25 + 5·Δr). Derivatives: pass-through of the relevant risk factor | Simple, transparent factor model |
 | **A8** | Source credibility: GDELT/news 1.0, custom 0.8, tweets 0.7 | Penalizes noisier social sources |
-| **A9** | FinBERT input truncated to 512 tokens | Model limit; avoids out-of-memory errors |
+| **A9** | FinBERT input truncated to 512 Characters | Model limit; avoids out-of-memory errors |
 
 ---
 
