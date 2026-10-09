@@ -25,7 +25,7 @@ class GdeltFetcher:
 
     def fetch_and_analyze(
         self,
-        query: str = "financial crisis OR interest rate OR default",
+        query: str = '("financial crisis" OR "interest rate" OR default)',
         days: int = 1,
         max_records: int = 10
     ) -> List[AnalysisResponse]:
@@ -96,7 +96,11 @@ class GdeltFetcher:
             )
             with urllib.request.urlopen(req, timeout=self.timeout_seconds) as response:
                 if response.status == 200:
-                    payload = json.loads(response.read().decode("utf-8"))
+                    raw_data = response.read().decode("utf-8")
+                    if not raw_data.strip().startswith("{"):
+                        logger.warning("GDELT API returned non-JSON format: %s", raw_data[:200])
+                        return []
+                    payload = json.loads(raw_data)
                     articles = payload.get("articles", [])
                     logger.info("Retrieved %d articles from GDELT.", len(articles))
                     return articles
