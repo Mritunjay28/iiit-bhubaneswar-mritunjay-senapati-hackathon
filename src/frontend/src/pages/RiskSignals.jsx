@@ -464,7 +464,7 @@ export const RiskSignals = () => {
                   </td>
 
                   <td style={{ textAlign: 'center' }}>
-                    <ImpactBadge score={signal.impactScore} />
+                    <ImpactBadge score={signal.impactScore} isTriggered={signal.stressTestTriggered} />
                   </td>
 
                   {/* The ONE Repeated CTA */}

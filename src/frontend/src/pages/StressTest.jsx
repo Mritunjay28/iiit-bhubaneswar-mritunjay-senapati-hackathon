@@ -44,12 +44,10 @@ export const StressTest = () => {
 
         let defaultEvent = 'GEOPOLITICAL';
         let defaultScen = scenarioList.find(s => s.eventType === 'GEOPOLITICAL') || scenarioList[0];
-        let overrideName = null;
 
         if (targetSignal) {
           defaultEvent = targetSignal.eventType || 'GEOPOLITICAL';
           defaultScen = scenarioList.find(s => s.eventType === defaultEvent) || scenarioList[0];
-          overrideName = `Signal Impact: ${targetSignal.entity || 'Broad Market'}`;
         }
         
         setSelectedScenario(defaultEvent);
@@ -471,7 +469,7 @@ export const StressTest = () => {
               {isLoss ? '-' : '+'}${Math.abs(result.totalPnlImpact ?? 0).toFixed(2)}M
             </div>
             <div style={{ fontSize: 'var(--text-caption)', lineHeight: 'var(--leading-snug)', letterSpacing: 'var(--tracking-tight)', fontFamily: 'var(--font-mono)', fontWeight: '700', color: isLoss ? '#f87171' : '#34d399' }}>
-              {(result.percentageChange ?? 0) >= 0 ? '+' : ''}{(result.percentageChange ?? 0).toFixed(2)}% Drawdown
+              {(result.percentageChange ?? 0) >= 0 ? '+' : ''}{(result.percentageChange ?? 0).toFixed(2)}% {isLoss ? 'Drawdown' : 'Gain'}
             </div>
           </div>
 

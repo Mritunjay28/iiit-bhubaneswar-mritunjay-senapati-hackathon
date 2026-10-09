@@ -118,9 +118,9 @@ export const SentimentBadge = ({ score }) => {
   );
 };
 
-export const ImpactBadge = ({ score }) => {
+export const ImpactBadge = ({ score, isTriggered }) => {
   const num = parseInt(score, 10) || 1;
-  const isHigh = num >= 7;
+  const isHigh = isTriggered !== undefined ? isTriggered : num >= 7;
 
   let bg = 'rgba(16, 185, 129, 0.12)';
   let border = '#10b981';

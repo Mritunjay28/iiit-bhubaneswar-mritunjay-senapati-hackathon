@@ -137,7 +137,7 @@ public class RiskOrchestrationService {
         if (gdeltResponse.getArticles() != null) {
             for (AnalysisResponseDto article : gdeltResponse.getArticles()) {
                 String ent = (article.getEntities() != null && !article.getEntities().isEmpty()) ? article.getEntities().get(0) : null;
-                results.add(ingestAndEvaluate(article.getRawText(), "GDELT", ent));
+                results.add(ingestAndEvaluate(article.getRawText(), article.getSource(), ent));
             }
         }
         return results;
