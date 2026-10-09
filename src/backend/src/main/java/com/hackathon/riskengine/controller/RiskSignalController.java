@@ -61,7 +61,7 @@ public class RiskSignalController {
 
     @PostMapping("/fetch/gdelt")
     public ResponseEntity<List<SignalIngestResponseDto>> fetchAndIngestGdelt(
-            @RequestParam(defaultValue = "bank crisis OR interest rate OR default") String query,
+            @RequestParam(defaultValue = "(\"bank crisis\" OR \"interest rate\" OR default)") String query,
             @RequestParam(defaultValue = "1") Integer days,
             @RequestParam(defaultValue = "10") Integer maxRecords) {
         List<SignalIngestResponseDto> responses = orchestrationService.ingestGdeltNews(query, days, maxRecords);

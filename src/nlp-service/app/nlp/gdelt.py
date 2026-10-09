@@ -25,7 +25,7 @@ class GdeltFetcher:
 
     def fetch_and_analyze(
         self,
-        query: str = '("financial crisis" OR "interest rate" OR default)',
+        query: str = '("bank crisis" OR "interest rate" OR default)',
         days: int = 1,
         max_records: int = 10
     ) -> List[AnalysisResponse]:
