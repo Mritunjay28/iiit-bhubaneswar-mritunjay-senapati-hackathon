@@ -165,50 +165,18 @@ export const RiskEngineApi = {
   },
 
   async ingestSignal(text, source = 'MANUAL', entity = 'Market') {
-    try {
-      const res = await apiClient.post('/signals/ingest', { text, source, entity });
-      return res.data;
-    } catch {
-      // Local calculation fallback if backend is offline
-      const impact = text.toLowerCase().includes('war') || text.toLowerCase().includes('default') ? 8 : 5;
-      const sentiment = -0.65;
-      const triggered = impact >= 7;
-      return {
-        signalId: Date.now(),
-        text,
-        source,
-        entity,
-        sentimentScore: sentiment,
-        eventType: 'GEOPOLITICAL',
-        impactScore: impact,
-        stressTestTriggered: triggered,
-        message: triggered ? 'High-impact risk signal triggered strategic stress test!' : 'Signal ingested successfully.',
-      };
-    }
+    const res = await apiClient.post('/signals/ingest', { text, source, entity });
+    return res.data;
   },
 
   async fetchGdelt(query = 'bank crisis OR interest rate OR default', days = 1, maxRecords = 10) {
-    try {
-      const res = await apiClient.post('/signals/fetch/gdelt', null, { params: { query, days, maxRecords } });
-      return res.data;
-    } catch {
-      return [
-        { signalId: Date.now() + 1, text: `GDELT News: Global credit conditions tighten following ${query}`, source: 'GDELT', entity: 'Banking', sentimentScore: -0.72, eventType: 'CREDIT_EVENT', impactScore: 8, stressTestTriggered: true },
-        { signalId: Date.now() + 2, text: 'GDELT News: Central banks issue joint financial stability alert on sovereign liquidity buffers', source: 'GDELT', entity: 'Central Banks', sentimentScore: -0.55, eventType: 'MACROECONOMIC', impactScore: 7, stressTestTriggered: true },
-      ];
-    }
+    const res = await apiClient.post('/signals/fetch/gdelt', null, { params: { query, days, maxRecords } });
+    return res.data;
   },
 
   async fetchTweets(limit = 20) {
-    try {
-      const res = await apiClient.post('/signals/fetch/tweets', null, { params: { limit } });
-      return res.data;
-    } catch {
-      return [
-        { signalId: Date.now() + 10, text: 'Traders dump regional corporate paper after unexpected debt restructuring filing #CreditRisk', source: 'TWITTER', entity: 'Corporate Debt', sentimentScore: -0.81, eventType: 'CREDIT_EVENT', impactScore: 8, stressTestTriggered: true },
-        { signalId: Date.now() + 11, text: 'Inflation figures overshoot forecast by 40 bps, market pricing in rate hike #Macro', source: 'TWITTER', entity: 'Treasury', sentimentScore: -0.45, eventType: 'MACROECONOMIC', impactScore: 6, stressTestTriggered: false },
-      ];
-    }
+    const res = await apiClient.post('/signals/fetch/tweets', null, { params: { limit } });
+    return res.data;
   },
 
   // --- Stress Tests ---
@@ -258,12 +226,15 @@ export const RiskEngineApi = {
           shockPercent = eqShock * 100;
         } else if (asset.assetType === 'BOND') {
           const durationImpact = -(asset.duration || 5.0) * rateShock;
-          const spreadImpact = -spreadShock * 0.01;
+          const spreadImpact = -(asset.duration || 5.0) * (spreadShock / 10000.0);
           pnl = asset.notionalValue * (durationImpact + spreadImpact);
           shockPercent = (durationImpact + spreadImpact) * 100;
         } else if (asset.assetType === 'LOAN') {
-          pnl = asset.notionalValue * (-spreadShock * 0.005);
-          shockPercent = (-spreadShock * 0.005) * 100;
+          const effectiveTenor = 3.2;
+          const defaultMigrationBuffer = 0.015 * (spreadShock / 100.0);
+          const loanShock = -(spreadShock / 10000.0) * effectiveTenor - defaultMigrationBuffer;
+          pnl = asset.notionalValue * loanShock;
+          shockPercent = loanShock * 100;
         } else if (asset.assetType === 'DERIVATIVE') {
           if (asset.sector === 'Index') {
             pnl = asset.notionalValue * eqShock;
